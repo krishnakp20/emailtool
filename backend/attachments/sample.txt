@@ -1,0 +1,11 @@
+This is a sample text file to test the attachment serving functionality.
+
+The attachments_json field in the database should contain JSON like:
+[
+  {
+    "filename": "sample.txt",
+    "mime_type": "text/plain",
+    "file_path": "sample.txt",
+    "size": 123
+  }
+]

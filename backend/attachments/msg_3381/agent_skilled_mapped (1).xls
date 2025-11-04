@@ -1,0 +1,1280 @@
+
+<table cellpadding="0" cellspacing="0" border="1" class="table table-striped table-bordered" >
+                  <thead>
+    <tr style="background-color:#317EAC; color:#FFFFFF;"> 
+    <th>Sno.</th>             
+    <th>Client Name</th> 
+    <th>Skilled</th>
+    <th>Agent Count</th>
+    <th>Agent Name</th>
+    </tr>
+    
+</thead>
+<tbody>
+         
+                     <tr>
+                                <td rowspan="2">1</td>    
+                <td rowspan="2">63SATS Cybertech Limited</td>                 <td>63SATSCybertech00001</td>
+                <td>3</td>
+                                <td>Ankit</td>
+                                <td>Rahul khurana</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+                      <tr>
+                                <td>63SATSCybertech00000</td>
+                <td>4</td>
+                                <td>Ankit</td>
+                                <td>Tanveer Singh </td>
+                                <td>Rahul khurana</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">2</td>    
+                <td rowspan="1">Aegis Personal Care LLP</td>                 <td>Zlade_OB</td>
+                <td>4</td>
+                                <td>Ankit</td>
+                                <td>Tanveer Singh </td>
+                                <td>Rahul khurana</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="3">3</td>    
+                <td rowspan="3">Akai India</td>                 <td>AKAI_Telugu</td>
+                <td>11</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shobha kumari</td>
+                                <td>Rida Khan</td>
+                                <td>Manisha Maheshwari</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>Aqsa wasi</td>
+                                <td>A.Prasanna</td>
+                                <td>Brajesh Ahirwar </td>
+                          </tr>   
+                      <tr>
+                                <td>AKAI</td>
+                <td>14</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shobha kumari</td>
+                                <td>Rida Khan</td>
+                                <td>Manisha Maheshwari</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>VARSHA PATWA</td>
+                                <td>Aqsa wasi</td>
+                                <td>A.Prasanna</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+                      <tr>
+                                <td>AKAI_Hindi</td>
+                <td>12</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Rida Khan</td>
+                                <td>Manisha Maheshwari</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>VARSHA PATWA</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">4</td>    
+                <td rowspan="1">ALPINO HEALTH FOODS PRIVATE LIMITED</td>                 <td>Alpino_Health_Foods</td>
+                <td>11</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Rida Khan</td>
+                                <td>Karan</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                                <td>Rahul khurana</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">5</td>    
+                <td rowspan="2">Anest Iwata Motherson Private Limited</td>                 <td>Anest_Motherson_Hin</td>
+                <td>5</td>
+                                <td>Shobha kumari</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>Aqsa wasi</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+                      <tr>
+                                <td>Anest_Motherson_Eng</td>
+                <td>5</td>
+                                <td>Shobha kumari</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>Aqsa wasi</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">6</td>    
+                <td rowspan="1">Avadhut Sathe Trading Academy Private Limited</td>                 <td>Asta_OB</td>
+                <td>5</td>
+                                <td>Shobha kumari</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>Aqsa wasi</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="5">7</td>    
+                <td rowspan="5">Ayurved Pratishthan Nasik Pvt Ltd</td>                 <td>Sando001</td>
+                <td>5</td>
+                                <td>Shobha kumari</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>Aqsa wasi</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+                      <tr>
+                                <td>Sando000</td>
+                <td>5</td>
+                                <td>Shobha kumari</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>Aqsa wasi</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+                      <tr>
+                                <td>Sandook_OB</td>
+                <td>5</td>
+                                <td>Shobha kumari</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>Aqsa wasi</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+                      <tr>
+                                <td>Sandook_</td>
+                <td>9</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Rida Khan</td>
+                                <td>Shashi</td>
+                                <td>Tanveer Singh </td>
+                          </tr>   
+                      <tr>
+                                <td>Sandook_Sutras</td>
+                <td>9</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Rida Khan</td>
+                                <td>Shashi</td>
+                                <td>Tanveer Singh </td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">8</td>    
+                <td rowspan="1">CHAROTAR TELELINK PVT LTD</td>                 <td>Charotar_Telelink</td>
+                <td>14</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Rida Khan</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>VARSHA PATWA</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">9</td>    
+                <td rowspan="2">Colorful Electronics Co.Limited</td>                 <td>Mega_Cabs</td>
+                <td>14</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Rida Khan</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>VARSHA PATWA</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+                      <tr>
+                                <td>Colorful</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">10</td>    
+                <td rowspan="1">Crystal Eye Centre Private Limited</td>                 <td>Crystal_OB</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">11</td>    
+                <td rowspan="1">Dialdesk  Customer Support</td>                 <td>DD_Customer_Care</td>
+                <td>4</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">12</td>    
+                <td rowspan="2">DLF Estate Developers Limited</td>                 <td>DLF_OB</td>
+                <td>4</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                          </tr>   
+                      <tr>
+                                <td>DLF</td>
+                <td>12</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>VARSHA PATWA</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">13</td>    
+                <td rowspan="2">DLF LIMITED</td>                 <td>DLF_OB</td>
+                <td>12</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>VARSHA PATWA</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+                      <tr>
+                                <td>DLF_Limited</td>
+                <td>12</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>VARSHA PATWA</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">14</td>    
+                <td rowspan="1">E-PRO TAXFILR TECHNOLOGY SOLUTIONS PRIVATE LIMITED</td>                 <td>EPROTAXFILRTECH00000</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>A.Prasanna</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">15</td>    
+                <td rowspan="1">EDEN\'S DELICACIES PRIVATE LIMITED</td>                 <td>Eden_OB</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>A.Prasanna</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">16</td>    
+                <td rowspan="1">Everready</td>                 <td>Everready00000</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">17</td>    
+                <td rowspan="1">F1 INFO SOLUTIONS & SERVICES PRIVATE LIMITED</td>                 <td>F1_Info_Solutions</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">18</td>    
+                <td rowspan="1">Fabo Services LLP</td>                 <td>Fabo_OB</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">19</td>    
+                <td rowspan="1">Fortum Charge & Drive India Private Limited</td>                 <td>Fortum</td>
+                <td>7</td>
+                                <td>Vanshika</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">20</td>    
+                <td rowspan="2">GADRE MARINE EXPORT PRIVATE LIMITED</td>                 <td>Gadre000</td>
+                <td>7</td>
+                                <td>Vanshika</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+                      <tr>
+                                <td>GADREMARINEEXPO00000</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Tanveer Singh </td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">21</td>    
+                <td rowspan="2">Glacer Ceramic</td>                 <td>Glacier_Ceramic</td>
+                <td>8</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Rida Khan</td>
+                                <td>Karan</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                          </tr>   
+                      <tr>
+                                <td>Glac_OB</td>
+                <td>8</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Rida Khan</td>
+                                <td>Karan</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">22</td>    
+                <td rowspan="2">GREENTOKRI FARMS PRIVATE LIMITED</td>                 <td>Green000</td>
+                <td>8</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Rida Khan</td>
+                                <td>Karan</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                          </tr>   
+                      <tr>
+                                <td>GREENTOKRIFARMS00000</td>
+                <td>6</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Aman Kohli	</td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">23</td>    
+                <td rowspan="1">HIMGIRI ENTERPRISES PVT LTD</td>                 <td>girish</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">24</td>    
+                <td rowspan="2">Hybon Elevators and Escalators Pvt Ltd</td>                 <td>Hybon_OB</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+                      <tr>
+                                <td>Hybon_Elevators</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">25</td>    
+                <td rowspan="1">INDcool Electricals Private Limited</td>                 <td>Indcool_Electricals</td>
+                <td>5</td>
+                                <td>Vanshika</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">26</td>    
+                <td rowspan="2">International Academy of Sound Healing</td>                 <td>IASHO000</td>
+                <td>5</td>
+                                <td>Vanshika</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+                      <tr>
+                                <td>IA_Sound_Healing</td>
+                <td>2</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="3">27</td>    
+                <td rowspan="3">MAYURI NIKHIL KALAMKAR</td>                 <td>MAYURINIKHILKAL00001</td>
+                <td>1</td>
+                                <td>Shashi</td>
+                          </tr>   
+                      <tr>
+                                <td>MAYURINIKHILKAL00000</td>
+                <td>1</td>
+                                <td>Shashi</td>
+                          </tr>   
+                      <tr>
+                                <td>Ishuk000</td>
+                <td>1</td>
+                                <td>Shashi</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">28</td>    
+                <td rowspan="2">Medvital Ventures Private Limited</td>                 <td>Medvi000</td>
+                <td>1</td>
+                                <td>Shashi</td>
+                          </tr>   
+                      <tr>
+                                <td>Medvital_Ventures</td>
+                <td>8</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Rida Khan</td>
+                                <td>Tanveer Singh </td>
+                                <td>Milindra Yadav</td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="3">29</td>    
+                <td rowspan="3">Mega Cabs Limited</td>                 <td>MegaCabsLimited00002</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>MegaCabsLimited00001</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>Mega_CabsOB</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">30</td>    
+                <td rowspan="2">Multybyte Marketing India Co.</td>                 <td>MultybyteMarket00000</td>
+                <td>9</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+                      <tr>
+                                <td>Multibyte_OB</td>
+                <td>9</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">31</td>    
+                <td rowspan="2">Nikhil Enterprises</td>                 <td>Zarf_OB</td>
+                <td>9</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+                      <tr>
+                                <td>Zarf_Studio</td>
+                <td>5</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="3">32</td>    
+                <td rowspan="3">Omega seiki pvt ltd</td>                 <td>OMEGA_English</td>
+                <td>9</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Manisha Maheshwari</td>
+                                <td>Manish</td>
+                                <td>Shashi</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+                      <tr>
+                                <td>OMEGA_OB</td>
+                <td>9</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Manisha Maheshwari</td>
+                                <td>Manish</td>
+                                <td>Shashi</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+                      <tr>
+                                <td>OMEGA_Hindi</td>
+                <td>9</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Manisha Maheshwari</td>
+                                <td>Manish</td>
+                                <td>Shashi</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">33</td>    
+                <td rowspan="1">PERFECT INFINET PVT LTD</td>                 <td>Perfect_Infinet</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">34</td>    
+                <td rowspan="1">Process Management Services</td>                 <td>PMS</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">35</td>    
+                <td rowspan="1">Radian Book Company</td>                 <td>Radian_O</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="3">36</td>    
+                <td rowspan="3">Rajesh Digital and Data Com Pvt Ltd</td>                 <td>Rajesh_Internet</td>
+                <td>12</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Rida Khan</td>
+                                <td>Shashi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+                      <tr>
+                                <td>Rajesh_Cable_TV</td>
+                <td>12</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Shobha kumari</td>
+                                <td>Rida Khan</td>
+                                <td>Shashi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+                      <tr>
+                                <td>Rajesh_Digital</td>
+                <td>4</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="4">37</td>    
+                <td rowspan="4">Ready Roti India Pvt Limited (Harvest Gold)</td>                 <td>Harvest_outbond</td>
+                <td>4</td>
+                                <td>Vanshika</td>
+                                <td>Shaina</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+                      <tr>
+                                <td>Harvest</td>
+                <td>11</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Rida Khan</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+                      <tr>
+                                <td>Harvest_Food_Hindi</td>
+                <td>11</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Rida Khan</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+                      <tr>
+                                <td>Harvest_Food</td>
+                <td>11</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Rida Khan</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Rahul khurana</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="7">38</td>    
+                <td rowspan="7">Revosal Inc</td>                 <td>RevosalInc00001</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>RevosalInc00000</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>Repair_My_Pixel_Tech</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>RMPixel</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>Revo_OB</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>Repair_My_Pixel</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>Revosol</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">39</td>    
+                <td rowspan="2">RIAM Enterprises</td>                 <td>RIAM_Enterprises</td>
+                <td>1</td>
+                                <td>Shobha kumari</td>
+                          </tr>   
+                      <tr>
+                                <td>RIAM_OB</td>
+                <td>1</td>
+                                <td>Shobha kumari</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="4">40</td>    
+                <td rowspan="4">Rx Infotech P Limited</td>                 <td>RXinfotechFeedbackcalling</td>
+                <td>1</td>
+                                <td>Shobha kumari</td>
+                          </tr>   
+                      <tr>
+                                <td>lapcare_support</td>
+                <td>8</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Karan</td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+                      <tr>
+                                <td>lapcare_sale</td>
+                <td>8</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Karan</td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+                      <tr>
+                                <td>lapcare</td>
+                <td>8</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Karan</td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">41</td>    
+                <td rowspan="1">SAI EXPO-IMPO INDIA</td>                 <td>SaiEx000</td>
+                <td>8</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Karan</td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">42</td>    
+                <td rowspan="2">Spares Superhero Pvt Ltd</td>                 <td>Spares_Superhero</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>Spare_OB</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">43</td>    
+                <td rowspan="2">SRF LIMITED</td>                 <td>SRFOB</td>
+                <td>1</td>
+                                <td></td>
+                          </tr>   
+                      <tr>
+                                <td>SRF_Limited</td>
+                <td>4</td>
+                                <td>Vanshika</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="7">44</td>    
+                <td rowspan="7">Tipping Mr. Pink Pvt. Ltd. (Burger Singh)</td>                 <td>BURGER_A</td>
+                <td>4</td>
+                                <td>Vanshika</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+                      <tr>
+                                <td>Burger_Singh_Hindi</td>
+                <td>8</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                          </tr>   
+                      <tr>
+                                <td>Burger_Singh_English</td>
+                <td>8</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                          </tr>   
+                      <tr>
+                                <td>Burger_Singh</td>
+                <td>8</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                          </tr>   
+                      <tr>
+                                <td>Burge001</td>
+                <td>8</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                          </tr>   
+                      <tr>
+                                <td>Burge000</td>
+                <td>8</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                          </tr>   
+                      <tr>
+                                <td>Burger_A</td>
+                <td>8</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="3">45</td>    
+                <td rowspan="3">TRAVELPORT HOLIDAYS (INDIA) PRIVATE LIMITED</td>                 <td>Clubmahi</td>
+                <td>8</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Aqsa wasi</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Akshat Agarwal</td>
+                                <td>Aman Kohli	</td>
+                          </tr>   
+                      <tr>
+                                <td>Travel_Port</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Brajesh Ahirwar </td>
+                          </tr>   
+                      <tr>
+                                <td>Gatiman_Ventures</td>
+                <td>6</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Brajesh Ahirwar </td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">46</td>    
+                <td rowspan="1">Usha Shriram Private Limited</td>                 <td>Usha_Shriram_New</td>
+                <td>7</td>
+                                <td>Mohd.Asif</td>
+                                <td>Sonam Yadav</td>
+                                <td>Shobha kumari</td>
+                                <td>Rida Khan</td>
+                                <td>Karan</td>
+                                <td>Shashi</td>
+                                <td>VARSHA PATWA</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="4">47</td>    
+                <td rowspan="4">Valeo Motherson</td>                 <td>63sats</td>
+                <td>4</td>
+                                <td>Ankit</td>
+                                <td>Tanveer Singh </td>
+                                <td>Rahul khurana</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+                      <tr>
+                                <td>Spher000</td>
+                <td>4</td>
+                                <td>Ankit</td>
+                                <td>Tanveer Singh </td>
+                                <td>Rahul khurana</td>
+                                <td>Geetika Kalra</td>
+                          </tr>   
+                      <tr>
+                                <td>H_Motherson</td>
+                <td>5</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                          </tr>   
+                      <tr>
+                                <td>E_Motherson</td>
+                <td>5</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="1">48</td>    
+                <td rowspan="1">VIDEOTEX INTERNATIONAL (P)T LTD</td>                 <td>Videotex</td>
+                <td>3</td>
+                                <td>Rida Khan</td>
+                                <td>Shashi</td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+            
+
+    
+         
+                     <tr>
+                                <td rowspan="2">49</td>    
+                <td rowspan="2">WORKSMART RETAIL LLP</td>                 <td>wosh_OB1</td>
+                <td>3</td>
+                                <td>Rida Khan</td>
+                                <td>Shashi</td>
+                                <td>Akshat Agarwal</td>
+                          </tr>   
+                      <tr>
+                                <td>Worksmart_Retail_LLP</td>
+                <td>11</td>
+                                <td>Vanshika</td>
+                                <td>Mohd.Asif</td>
+                                <td>Shaina</td>
+                                <td>Ankit</td>
+                                <td>Jyoti Sapra</td>
+                                <td>Rida Khan</td>
+                                <td>Manish</td>
+                                <td>Karan</td>
+                                <td>Brajesh Ahirwar </td>
+                                <td>Tanveer Singh </td>
+                                <td>Milindra Yadav</td>
+                          </tr>   
+            
+
+    
+    </tbody>
+</table> 
+
+

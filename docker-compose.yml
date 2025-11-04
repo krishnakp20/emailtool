@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: mas
+      MYSQL_USER: mas
+      MYSQL_PASSWORD: maspass
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"  # UI
+      - "1025:1025"  # SMTP
+
+  api:
+    build: ./backend
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - mailhog
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  worker:
+    build: ./backend
+    env_file: .env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - mailhog
+    command: python -m app.workers.imap_worker
+
+  web:
+    build: ./frontend
+    env_file: .env
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/usr/src/app
+    command: npm run dev -- --host 0.0.0.0
+    depends_on:
+      - api
+
+volumes:
+  dbdata: 

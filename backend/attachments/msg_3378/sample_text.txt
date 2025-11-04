@@ -1,0 +1,5 @@
+This is a sample text file attachment.
+
+It contains some sample text to demonstrate the attachment functionality.
+
+This file was created to show how attachments work in the email ticket system.
