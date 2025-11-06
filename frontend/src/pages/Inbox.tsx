@@ -301,10 +301,10 @@ const Inbox: React.FC = () => {
                       ) : (
                         ticket.assigned_user ? (
                           <div className="text-xs font-medium text-gray-900">{ticket.assigned_user.name}</div>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700">
-                            Unassigned
-                          </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-700">
+                          Unassigned
+                        </span>
                         )
                       )}
                     </td>

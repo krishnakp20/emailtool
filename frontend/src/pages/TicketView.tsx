@@ -14,11 +14,14 @@ const TicketView: React.FC = () => {
   const [messages, setMessages] = useState<TicketMessage[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
   const [advisers, setAdvisers] = useState<User[]>([])
   const [showReassignModal, setShowReassignModal] = useState(false)
   const [selectedAdviserId, setSelectedAdviserId] = useState<number | null>(null)
-  const [isReassigning, setIsReassigning] = useState(false)
+  const [showCloseReplyModal, setShowCloseReplyModal] = useState(false)
+  const [closingReplyText, setClosingReplyText] = useState('')
+  const [isSendingClosingReply, setIsSendingClosingReply] = useState(false)
 
   useEffect(() => {
     if (id) {
@@ -63,11 +66,31 @@ const TicketView: React.FC = () => {
   }
 
   const handleReply = async (text: string, templateId?: number) => {
+    if (!ticket) return
+    
+    // Rule: Cannot reply without tags (priority, language, VOC)
+    const missingTags = []
+    if (!ticket.priority_id) missingTags.push('Priority')
+    if (!ticket.language_id) missingTags.push('Language')
+    if (!ticket.voc_id) missingTags.push('VOC')
+    
+    if (missingTags.length > 0) {
+      throw new Error(`Cannot reply without tags. Please set: ${missingTags.join(', ')}`)
+    }
+    
     try {
       await ticketsAPI.reply(parseInt(id!), text, templateId)
-      // Refresh messages after reply
+      // Refresh messages and ticket after reply
       await fetchMessages()
-      await fetchTicket() // Refresh ticket to get updated timestamp
+      await fetchTicket() // Refresh ticket - status may change to Open if it was closed
+      
+      // Show success message
+      if (ticket.status === 'Closed') {
+        setSuccess('Reply sent successfully! Ticket has been reopened.')
+      } else {
+        setSuccess('Reply sent successfully!')
+      }
+      setTimeout(() => setSuccess(''), 5000)
     } catch (err: any) {
       throw new Error(err.response?.data?.detail || 'Failed to send reply')
     }
@@ -76,14 +99,69 @@ const TicketView: React.FC = () => {
   const handleStatusChange = async (newStatus: string) => {
     if (!ticket) return
     
+    // Rule: ALWAYS require closing email when closing ticket (no exceptions)
+    if (newStatus === 'Closed') {
+      // Always open modal to require closing reply - no exceptions
+      // Store the original status to restore if cancelled
+      setShowCloseReplyModal(true)
+      return
+    }
+    
+    // For Open/Pending, just update normally
     setIsUpdating(true)
     try {
       const updatedTicket = await ticketsAPI.update(parseInt(id!), { status: newStatus as any })
       setTicket(updatedTicket)
+      setError('')
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to update status')
+      // Reset dropdown on error
+      const statusSelect = document.querySelector('select[class*="border-gray-300"]') as HTMLSelectElement
+      if (statusSelect && ticket) {
+        statusSelect.value = ticket.status
+      }
     } finally {
       setIsUpdating(false)
+    }
+  }
+
+  const handleCloseWithReply = async () => {
+    if (!closingReplyText.trim() || !ticket) return
+    
+    // Rule: Cannot reply without tags (priority, language, VOC)
+    const missingTags = []
+    if (!ticket.priority_id) missingTags.push('Priority')
+    if (!ticket.language_id) missingTags.push('Language')
+    if (!ticket.voc_id) missingTags.push('VOC')
+    
+    if (missingTags.length > 0) {
+      setError(`Cannot close ticket. Please set tags first: ${missingTags.join(', ')}`)
+      return
+    }
+    
+    setIsSendingClosingReply(true)
+    setError('')
+    
+    try {
+      // Send the closing reply and close in the same request
+      await ticketsAPI.reply(parseInt(id!), closingReplyText, undefined, true)
+      
+      // Refresh ticket to get Closed status
+      const updated = await ticketsAPI.get(parseInt(id!))
+      setTicket(updated)
+      
+      // Refresh messages
+      await fetchMessages()
+      
+      // Close modal and reset
+      setShowCloseReplyModal(false)
+      setClosingReplyText('')
+      setSuccess('Closing email sent successfully! Ticket has been closed.')
+      setTimeout(() => setSuccess(''), 5000)
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to send closing email')
+    } finally {
+      setIsSendingClosingReply(false)
     }
   }
 
@@ -128,6 +206,16 @@ const TicketView: React.FC = () => {
     currentUser?.role === 'admin' || 
     (currentUser?.role === 'adviser' && ticket.assigned_to === currentUser.id)
   )
+  
+  // Check if all required tags are set
+  const hasAllTags = ticket && ticket.priority_id && ticket.language_id && ticket.voc_id
+  const missingTags = ticket ? [
+    !ticket.priority_id && 'Priority',
+    !ticket.language_id && 'Language',
+    !ticket.voc_id && 'VOC'
+  ].filter(Boolean) as string[] : []
+  
+  const canReplyWithTags = canReply && hasAllTags
 
   if (isLoading) {
     return (
@@ -146,12 +234,29 @@ const TicketView: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Error Alert */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex justify-between items-center">
           <span>{error}</span>
           <button onClick={() => setError('')} className="text-red-700 hover:text-red-900">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+      
+      {/* Success Alert */}
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md flex justify-between items-center">
+          <div className="flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>{success}</span>
+          </div>
+          <button onClick={() => setSuccess('')} className="text-green-700 hover:text-green-900">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -216,55 +321,130 @@ const TicketView: React.FC = () => {
         </div>
       )}
       
+      {/* Close Ticket with Reply Modal */}
+      {showCloseReplyModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900">
+                Close Ticket with Reply
+              </h3>
+              <p className="text-sm text-gray-600 mt-1">
+                You must send a closing email to the customer before closing this ticket.
+              </p>
+            </div>
+            
+            <div className="px-6 py-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Closing Message *
+              </label>
+              <textarea
+                value={closingReplyText}
+                onChange={(e) => setClosingReplyText(e.target.value)}
+                rows={8}
+                placeholder="Type your closing message to the customer..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                disabled={isSendingClosingReply}
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                This email will be sent to the customer and then the ticket will be closed.
+              </p>
+            </div>
+            
+            <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3 rounded-b-lg">
+              <button
+                onClick={() => {
+                  setShowCloseReplyModal(false)
+                  setClosingReplyText('')
+                  // Reset status dropdown to original value
+                  if (ticket) {
+                    const statusSelect = document.querySelector('select[class*="border-gray-300"]') as HTMLSelectElement
+                    if (statusSelect) {
+                      statusSelect.value = ticket.status
+                    }
+                  }
+                }}
+                disabled={isSendingClosingReply}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCloseWithReply}
+                disabled={!closingReplyText.trim() || isSendingClosingReply || !hasAllTags}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSendingClosingReply ? 'Sending...' : 'Send & Close Ticket'}
+              </button>
+            </div>
+            
+            {!hasAllTags && (
+              <div className="px-6 pb-4">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-sm text-red-800">
+                    <strong>Cannot close:</strong> Please set Priority, Language, and VOC tags before closing.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      
       {/* Header */}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-lg p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-xl font-semibold text-gray-900 mb-1">
               {ticket.subject}
             </h1>
-            <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+            <div className="flex items-center space-x-3 text-xs text-gray-500 mb-2">
               <span>Ticket #{ticket.id}</span>
               <span>Created: {new Date(ticket.created_at).toLocaleDateString()}</span>
               <span>Updated: {new Date(ticket.updated_at).toLocaleDateString()}</span>
             </div>
             
             {/* Status and Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-700">Status:</span>
+                <span className="text-xs font-medium text-gray-700">Status:</span>
                 <select
                   value={ticket.status}
                   onChange={(e) => handleStatusChange(e.target.value)}
                   disabled={isUpdating}
-                  className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-2 py-1 border border-gray-300 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   <option value="Open">Open</option>
                   <option value="Pending">Pending</option>
                   <option value="Closed">Closed</option>
                 </select>
               </div>
-              
-              {ticket.status === 'Closed' && (
-                <button
-                  onClick={() => handleStatusChange('Open')}
-                  className="px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700"
-                >
-                  Reopen
-                </button>
-              )}
             </div>
+            
+            {/* Warning: Reply required before closing */}
+            {ticket.status !== 'Closed' && messages.filter(m => m.direction === 'outbound').length === 0 && (
+              <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded p-2">
+                <div className="flex items-start">
+                  <svg className="w-4 h-4 text-yellow-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <p className="text-xs text-yellow-800">
+                    <strong>Important:</strong> When closing this ticket, you must send a closing email to the customer. Select "Closed" to send the closing email.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Customer Info */}
           <div className="text-right">
-            <div className="text-sm text-gray-500">Customer</div>
-            <div className="font-medium">{ticket.customer_name || ticket.customer_email.split('@')[0]}</div>
-            <div className="text-sm text-gray-600">{ticket.customer_email}</div>
+            <div className="text-xs text-gray-500">Customer</div>
+            <div className="text-sm font-medium">{ticket.customer_name || ticket.customer_email.split('@')[0]}</div>
+            <div className="text-xs text-gray-600">{ticket.customer_email}</div>
             {ticket.assigned_user ? (
               <div className="mt-2">
-                <div className="text-sm text-gray-500">Assigned to</div>
-                <div className="font-medium">{ticket.assigned_user.name}</div>
+                <div className="text-xs text-gray-500">Assigned to</div>
+                <div className="text-sm font-medium">{ticket.assigned_user.name}</div>
                 {currentUser?.role === 'admin' && (
                   <button
                     onClick={openReassignModal}
@@ -276,8 +456,8 @@ const TicketView: React.FC = () => {
               </div>
             ) : (
               <div className="mt-2">
-                <div className="text-sm text-gray-500">Assigned to</div>
-                <div className="text-sm text-red-600">Unassigned</div>
+                <div className="text-xs text-gray-500">Assigned to</div>
+                <div className="text-xs text-red-600">Unassigned</div>
                 {currentUser?.role === 'admin' && (
                   <button
                     onClick={openReassignModal}
@@ -292,27 +472,52 @@ const TicketView: React.FC = () => {
         </div>
         
         {/* Tags */}
-        <div className="mt-4">
+        <div className="mt-2">
           <TagPills ticket={ticket} editable={true} onUpdate={handleTagUpdate} />
         </div>
       </div>
 
-      {/* Reply Box - Moved above Message Thread */}
-      {canReply && ticket.status !== 'Closed' && (
+      {/* Reply Box - Show if ticket is open OR if closed but has previous reply */}
+      {canReply && (ticket.status !== 'Closed' || messages.some(m => m.direction === 'outbound')) && (
+        <>
+          {!hasAllTags && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+              <div className="flex items-center text-sm text-red-700">
+                <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span>
+                  Cannot reply: please set tags first — <strong>{missingTags.join(', ')}</strong>.
+                </span>
+              </div>
+            </div>
+          )}
         <ReplyBox
           ticketId={ticket.id}
           onReply={handleReply}
-          disabled={isUpdating}
+            disabled={isUpdating || !hasAllTags}
         />
+        </>
       )}
       
-      {!canReply && (
+      {!canReply && ticket.status !== 'Closed' && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="text-yellow-800">
-            {ticket.status === 'Closed' 
-              ? 'This ticket is closed and cannot be replied to.'
-              : 'You can only reply to tickets assigned to you.'
-            }
+            You can only reply to tickets assigned to you.
+          </div>
+        </div>
+      )}
+      
+      {/* Info for closed tickets with reply */}
+      {ticket.status === 'Closed' && messages.some(m => m.direction === 'outbound') && canReply && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div className="flex items-start">
+            <svg className="w-5 h-5 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> This ticket is closed. You can send another reply and it will automatically reopen the ticket.
+            </p>
           </div>
         </div>
       )}
@@ -320,40 +525,40 @@ const TicketView: React.FC = () => {
       {/* Visual Separator */}
       <div className="flex items-center">
         <div className="flex-1 border-t border-gray-200"></div>
-        <div className="px-4 text-sm text-gray-500">Message History</div>
+        <div className="px-3 text-xs text-gray-500">Message History</div>
         <div className="flex-1 border-t border-gray-200"></div>
       </div>
 
       {/* Messages Thread */}
       <div className="bg-white shadow rounded-lg">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-medium text-gray-900">Conversation History</h2>
-          <p className="text-sm text-gray-600 mt-1">All messages in this ticket thread</p>
+        <div className="px-4 py-3 border-b border-gray-200">
+          <h2 className="text-base font-medium text-gray-900">Conversation History</h2>
+          <p className="text-xs text-gray-600 mt-1">All messages in this ticket thread</p>
         </div>
         
         <div className="divide-y divide-gray-200">
           {messages
             .sort((a, b) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime())
             .map((message) => (
-            <div key={message.id} className="p-6">
+            <div key={message.id} className="p-3">
               <div className="flex items-start space-x-3">
                 <div className={`w-2 h-2 rounded-full mt-2 ${
                   message.direction === 'inbound' ? 'bg-blue-500' : 'bg-green-500'
                 }`} />
                 
                 <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-sm font-medium text-gray-900">
+                  <div className="flex items-center space-x-2 mb-1.5">
+                    <span className="text-xs font-medium text-gray-900">
                       {message.direction === 'inbound' ? message.from_email : message.to_email}
                     </span>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
+                    <span className={`px-1.5 py-0.5 text-[10px] rounded-full ${
                       message.direction === 'inbound' 
                         ? 'bg-blue-100 text-blue-800' 
                         : 'bg-green-100 text-green-800'
                     }`}>
                       {message.direction === 'inbound' ? 'Inbound' : 'Outbound'}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs text-gray-500">
                       {new Date(message.sent_at).toLocaleString()}
                     </span>
                   </div>

@@ -50,6 +50,7 @@ class TicketUpdate(BaseModel):
 class TicketReply(BaseModel):
     text: str
     template_id: Optional[int] = None
+    close_after: Optional[bool] = False
 
 class MessageResponse(BaseModel):
     id: int
@@ -314,6 +315,14 @@ async def update_ticket(
         if ticket_data.assigned_to is not None:
             raise HTTPException(status_code=403, detail="Cannot reassign tickets")
     
+    # Rule: Cannot manually close ticket - must send closing email via reply
+    # Closing should only happen through the reply endpoint with closing email
+    if ticket_data.status == TicketStatus.Closed:
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot close ticket directly. You must send a closing email to the customer using the 'Close with Reply' feature."
+        )
+    
     # Update fields
     for field, value in ticket_data.dict(exclude_unset=True).items():
         setattr(ticket, field, value)
@@ -383,6 +392,21 @@ async def reply_to_ticket(
         if ticket.assigned_to != current_user.id:
             raise HTTPException(status_code=403, detail="Can only reply to assigned tickets")
     
+    # Rule: Cannot reply without tags (priority, language, VOC)
+    missing_tags = []
+    if not ticket.priority_id:
+        missing_tags.append("Priority")
+    if not ticket.language_id:
+        missing_tags.append("Language")
+    if not ticket.voc_id:
+        missing_tags.append("VOC")
+    
+    if missing_tags:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot reply without tags. Please set: {', '.join(missing_tags)}"
+        )
+    
     # Get template if specified and replace variables
     subject = f"[TKT-{ticket_id}] {ticket.subject}"
     body = reply_data.text
@@ -435,6 +459,19 @@ async def reply_to_ticket(
     if not message_id:
         raise HTTPException(status_code=500, detail="Failed to send email")
     
+    # Rule: If ticket is closed and has previous reply, reopen it when replying again
+    should_reopen = False
+    if ticket.status == TicketStatus.Closed:
+        # Check if ticket has any previous outbound messages (replies)
+        has_previous_reply = db.query(TicketMessage).filter(
+            TicketMessage.ticket_id == ticket_id,
+            TicketMessage.direction == MsgDir.outbound
+        ).first()
+        
+        if has_previous_reply:
+            # Reopen ticket when replying to a closed ticket
+            should_reopen = True
+    
     # Create outbound message record
     outbound_message = TicketMessage(
         ticket_id=ticket_id,
@@ -449,6 +486,14 @@ async def reply_to_ticket(
     )
     
     db.add(outbound_message)
+    
+    # Reopen ticket if it was closed and has previous reply
+    if should_reopen:
+        ticket.status = TicketStatus.Open
+
+    # Close ticket if explicitly requested via close_after flag
+    if reply_data.close_after:
+        ticket.status = TicketStatus.Closed
     
     # Update ticket timestamp
     ticket.updated_at = datetime.utcnow()

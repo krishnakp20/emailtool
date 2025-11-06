@@ -178,8 +178,8 @@ export const ticketsAPI = {
     return response.data
   },
 
-  reply: async (id: number, text: string, template_id?: number): Promise<any> => {
-    const response = await apiClient.post(`/tickets/${id}/reply`, { text, template_id })
+  reply: async (id: number, text: string, template_id?: number, close_after?: boolean): Promise<any> => {
+    const response = await apiClient.post(`/tickets/${id}/reply`, { text, template_id, close_after })
     return response.data
   },
 
