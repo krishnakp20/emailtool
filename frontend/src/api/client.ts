@@ -179,6 +179,13 @@ export const ticketsAPI = {
   },
 
   reply: async (id: number, text: string, template_id?: number, close_after?: boolean): Promise<any> => {
+    const payload: Record<string, any> = {
+        text: text.trim(),
+        close_after: close_after ?? false,
+    }
+    if (template_id) {
+        payload.template_id = template_id
+    }
     const response = await apiClient.post(`/tickets/${id}/reply`, { text, template_id, close_after })
     return response.data
   },

@@ -19,6 +19,7 @@ const TicketView: React.FC = () => {
   const [advisers, setAdvisers] = useState<User[]>([])
   const [showReassignModal, setShowReassignModal] = useState(false)
   const [selectedAdviserId, setSelectedAdviserId] = useState<number | null>(null)
+  const [isReassigning, setIsReassigning] = useState(false)
   const [showCloseReplyModal, setShowCloseReplyModal] = useState(false)
   const [closingReplyText, setClosingReplyText] = useState('')
   const [isSendingClosingReply, setIsSendingClosingReply] = useState(false)

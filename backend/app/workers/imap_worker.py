@@ -23,6 +23,7 @@ from app.models import (
 )
 from app.services.assignment import next_adviser_id
 from app.services.mailer import send_mail
+from app.services.auto_tagger import AutoTagger
 from app.workers.attachment_handler import AttachmentHandler
 
 # Configure logging
@@ -272,6 +273,13 @@ class IMAPWorker:
                 self.db.commit()
                 logger.info(f"Appended message to existing ticket {existing_ticket.id} (same subject and customer)")
                 return True
+
+            # Extract text content
+            body_text = self.extract_text_from_email(msg)
+
+            # Auto-tag categories
+            tagger = AutoTagger(self.db)
+            language, voc, priority = tagger.auto_tag(subject, body_text)
             
             # Create new ticket
             assigned_to = next_adviser_id(self.db)
@@ -288,7 +296,10 @@ class IMAPWorker:
                 customer_name=from_email.split('@')[0],  # Simple name extraction
                 subject=subject,
                 status=TicketStatus.Open,
-                assigned_to=assigned_to
+                assigned_to=assigned_to,
+                language_id=language.id if language else None,
+                voc_id=voc.id if voc else None,
+                priority_id=priority.id if priority else None
             )
             self.db.add(ticket)
             self.db.flush()  # Get the ID
