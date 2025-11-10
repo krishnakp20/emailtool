@@ -396,9 +396,36 @@ const TicketView: React.FC = () => {
       <div className="bg-white shadow rounded-lg p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h1 className="text-xl font-semibold text-gray-900 mb-1">
-              {ticket.subject}
-            </h1>
+              <div className="flex items-center space-x-2 mb-1">
+                <h1 className="text-xl font-semibold text-gray-900">
+                  {ticket.subject}
+                </h1>
+
+                {/* Open in CRM Icon */}
+                <a
+                  href={`http://192.168.11.6/agent/OfflineTaggings/home?clientId=478&callingType=offline&ticket_id=${ticket.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800"
+                  title="Open in CRM"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4m-6 0l8-8m0 0h-5m5 0v5"
+                    />
+                  </svg>
+                </a>
+              </div>
+
             <div className="flex items-center space-x-3 text-xs text-gray-500 mb-2">
               <span>Ticket #{ticket.id}</span>
               <span>Created: {new Date(ticket.created_at).toLocaleDateString()}</span>

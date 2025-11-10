@@ -25,6 +25,54 @@ from app.services.assignment import next_adviser_id
 from app.services.mailer import send_mail
 from app.services.auto_tagger import AutoTagger
 from app.workers.attachment_handler import AttachmentHandler
+import re
+import unicodedata
+from email.utils import parseaddr
+
+
+def clean_email_text(text: str) -> str:
+    """Clean unwanted characters (symbols, control chars, extra spaces) from email text."""
+    if not text:
+        return ""
+
+    # Normalize unicode (remove odd encodings)
+    text = unicodedata.normalize("NFKC", text)
+
+    # Remove non-printable/control characters
+    text = re.sub(r"[^\x20-\x7E\n\t]", " ", text)
+
+    # Remove unwanted punctuation/symbols
+    # Keeps only letters, digits, ., , ! ?, -, _, ', ", and spaces
+    text = re.sub(r"[^A-Za-z0-9.,!?'\-\"_\s\n\t]", " ", text)
+
+    # Collapse multiple spaces/newlines into one space
+    text = re.sub(r"\s+", " ", text).strip()
+
+    return text
+
+
+def extract_email_address(raw_value: str) -> str:
+    """Extract only the pure email address from 'Name <email>' or similar formats."""
+    if not raw_value:
+        return ""
+
+    # Handle list or tuple input
+    if isinstance(raw_value, (list, tuple)):
+        raw_value = ", ".join(raw_value)
+
+    from email.utils import getaddresses
+    addresses = getaddresses([raw_value])
+    if addresses:
+        # getaddresses returns list of (name, email) tuples
+        name, email = addresses[0]
+        if email:
+            return email.strip().lower()
+
+    # Fallback regex extraction
+    match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', raw_value)
+    return match.group(0).lower() if match else raw_value.strip().lower()
+
+
 
 # Configure logging
 logging.basicConfig(
@@ -61,16 +109,17 @@ class IMAPWorker:
         try:
             # Try to get plain text first
             if msg.get_body(preferencelist=('plain',)):
-                return msg.get_body(preferencelist=('plain',)).get_content()
+                return clean_email_text(msg.get_body(preferencelist=('plain',)).get_content())
             
             # Fallback to HTML
             if msg.get_body(preferencelist=('html',)):
                 html_content = msg.get_body(preferencelist=('html',)).get_content()
                 soup = BeautifulSoup(html_content, 'html.parser')
-                return soup.get_text(separator=' ', strip=True)
+                return clean_email_text(soup.get_text(separator=' ', strip=True))
             
             # If no specific body found, try to get any text content
             text_content = ""
+
             for part in msg.walk():
                 if part.get_content_type() == 'text/plain':
                     text_content += part.get_content() + "\n"
@@ -79,7 +128,7 @@ class IMAPWorker:
                     soup = BeautifulSoup(html_content, 'html.parser')
                     text_content += soup.get_text(separator=' ', strip=True) + "\n"
             
-            return text_content.strip() if text_content else ""
+            return clean_email_text(text_content.strip()) if text_content else ""
             
         except Exception as e:
             logger.error(f"Failed to extract text from email: {str(e)}")
@@ -114,7 +163,8 @@ class IMAPWorker:
             msg = email.message_from_bytes(full_email, policy=policy.default)
             
             # Extract basic email info
-            from_email = msg.get('from', '')
+            from_email = extract_email_address(msg.get('from', ''))
+            logger.info(f"Raw From: {msg.get('from', '')} → Extracted: {from_email}")
             subject = msg.get('subject', '')
             received_date = msg.get('date')
             

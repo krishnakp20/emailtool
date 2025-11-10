@@ -220,6 +220,9 @@ const Inbox: React.FC = () => {
                     Assigned
                   </th>
                   <th scope="col" className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
+                    Created
+                  </th>
+                  <th scope="col" className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
                     Updated
                   </th>
                   <th scope="col" className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
@@ -307,6 +310,9 @@ const Inbox: React.FC = () => {
                         </span>
                         )
                       )}
+                    </td>
+                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">
+                      {formatDate(ticket.created_at)}
                     </td>
                     <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-600">
                       {formatDate(ticket.updated_at)}

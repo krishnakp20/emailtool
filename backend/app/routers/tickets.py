@@ -502,11 +502,17 @@ async def reply_to_ticket(
     
     return {"message": "Reply sent successfully", "message_id": message_id}
 
+
+
+class ReassignRequest(BaseModel):
+    assigned_to: int
+
+
 # Reassign ticket (admin only)
 @router.post("/{ticket_id}/reassign")
 async def reassign_ticket(
     ticket_id: int,
-    assigned_to: int,
+    payload: ReassignRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin)
 ):
@@ -516,11 +522,11 @@ async def reassign_ticket(
         raise HTTPException(status_code=404, detail="Ticket not found")
     
     # Verify assigned user exists and is an adviser
-    user = db.query(User).filter(User.id == assigned_to).first()
+    user = db.query(User).filter(User.id == payload.assigned_to).first()
     if not user or user.role != Role.adviser or not user.is_active:
         raise HTTPException(status_code=400, detail="Invalid adviser ID")
     
-    ticket.assigned_to = assigned_to
+    ticket.assigned_to = payload.assigned_to
     ticket.updated_at = datetime.utcnow()
     
     db.commit()

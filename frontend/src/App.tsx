@@ -48,6 +48,7 @@ function AppRoutes() {
       }>
         <Route index element={<Navigate to="/inbox" replace />} />
         <Route path="inbox" element={<Inbox />} />
+        <Route path="ticket" element={<Inbox />} />
         <Route path="ticket/:id" element={<TicketView />} />
         <Route path="send-email" element={<SendEmail />} />
         <Route path="admin" element={

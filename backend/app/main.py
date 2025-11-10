@@ -17,6 +17,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
+
+# Serve attachments from project root
+app.mount(
+    "/attachments",
+    StaticFiles(directory=os.path.join(os.path.dirname(__file__), "../../attachments")),
+    name="attachments"
+)
+
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
@@ -48,22 +57,22 @@ async def health_check():
     return {"status": "healthy"}
 
 # File serving for attachments
-@app.get("/attachments/{file_path:path}")
-async def serve_attachment(file_path: str):
-    """Serve attachment files from the attachments directory"""
-    # For development, serve from local attachments directory
-    # In production, this could be replaced with cloud storage URLs
-    attachment_dir = "attachments"
-    
-    # Ensure the file path is safe (no directory traversal)
-    if ".." in file_path or file_path.startswith("/"):
-        from fastapi import HTTPException
-        raise HTTPException(status_code=400, detail="Invalid file path")
-    
-    file_path = os.path.join(attachment_dir, file_path)
-    
-    if not os.path.exists(file_path):
-        from fastapi import HTTPException
-        raise HTTPException(status_code=404, detail="File not found")
-    
-    return FileResponse(file_path) 
+# @app.get("/attachments/{file_path:path}")
+# async def serve_attachment(file_path: str):
+#     """Serve attachment files from the attachments directory"""
+#     # For development, serve from local attachments directory
+#     # In production, this could be replaced with cloud storage URLs
+#     attachment_dir = "attachments"
+#
+#     # Ensure the file path is safe (no directory traversal)
+#     if ".." in file_path or file_path.startswith("/"):
+#         from fastapi import HTTPException
+#         raise HTTPException(status_code=400, detail="Invalid file path")
+#
+#     file_path = os.path.join(attachment_dir, file_path)
+#
+#     if not os.path.exists(file_path):
+#         from fastapi import HTTPException
+#         raise HTTPException(status_code=404, detail="File not found")
+#
+#     return FileResponse(file_path)
