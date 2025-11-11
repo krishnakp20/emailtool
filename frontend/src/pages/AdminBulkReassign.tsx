@@ -113,6 +113,23 @@ const AdminBulkReassign: React.FC = () => {
   const sourceAgent = advisers.find(a => a.id === sourceAgentId)
   const targetAgent = advisers.find(a => a.id === targetAgentId)
 
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    } else {
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+  }
+
+
   return (
     <div className="space-y-6">
       <div className="bg-white shadow rounded-lg p-6">
@@ -272,6 +289,9 @@ const AdminBulkReassign: React.FC = () => {
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
                           Priority
                         </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
+                          Created
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -312,6 +332,9 @@ const AdminBulkReassign: React.FC = () => {
                           </td>
                           <td className="px-4 py-3 text-sm text-gray-600">
                             {ticket.priority?.name || '-'}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
+                            {formatDate(ticket.created_at)}
                           </td>
                         </tr>
                       ))}
