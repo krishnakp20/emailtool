@@ -47,7 +47,7 @@ const TagPills: React.FC<TagPillsProps> = ({ ticket, onUpdate, editable = false 
     setSelectedPriority(ticket.priority_id || null)
   }, [ticket.language_id, ticket.voc_id, ticket.priority_id])
 
-  const handleTagClick = (type: 'language' | 'voc' | 'priority') => {
+  const handleTagClick = (_type: 'language' | 'voc' | 'priority') => {
     if (editable && !isEditing) {
       setIsEditing(true)
     }
@@ -56,9 +56,9 @@ const TagPills: React.FC<TagPillsProps> = ({ ticket, onUpdate, editable = false 
   const handleSave = () => {
     if (onUpdate) {
       onUpdate({
-        language_id: selectedLanguage,
-        voc_id: selectedVOC,
-        priority_id: selectedPriority
+        language_id: selectedLanguage ?? undefined,
+        voc_id: selectedVOC ?? undefined,
+        priority_id: selectedPriority ?? undefined,
       })
     }
     setIsEditing(false)

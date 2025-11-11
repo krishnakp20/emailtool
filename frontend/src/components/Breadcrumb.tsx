@@ -6,7 +6,7 @@ const Breadcrumb: React.FC = () => {
   
   const generateBreadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter((x) => x)
-    const breadcrumbs = []
+    const breadcrumbs: any[] = []
     
     let currentPath = ''
     

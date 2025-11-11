@@ -50,7 +50,7 @@ const AdminUsers: React.FC = () => {
 
     try {
       const updateData = { ...formData }
-      if (!updateData.password) delete updateData.password
+      if (!updateData.password) delete (updateData as any).password
       
       await usersAPI.update(editingUser.id, updateData)
       setEditingUser(null)

@@ -14,7 +14,7 @@ const TicketRow: React.FC<TicketRowProps> = ({ ticket, onTicketUpdate }) => {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
-  const getStatusColor = (status: string) => {
+  const _getStatusColor = (status: string) => {
     switch (status) {
       case 'Open':
         return 'bg-green-100 text-green-800'
@@ -62,7 +62,7 @@ const TicketRow: React.FC<TicketRowProps> = ({ ticket, onTicketUpdate }) => {
       <td className="px-6 py-4 whitespace-nowrap">
         <select
           value={ticket.assigned_to || ''}
-          onChange={(e) => handleUpdate({ assigned_to: e.target.value ? parseInt(e.target.value) : null })}
+          onChange={(e) => handleUpdate({ assigned_to: e.target.value ? parseInt(e.target.value) : undefined })}
           className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option value="">Unassigned</option>
