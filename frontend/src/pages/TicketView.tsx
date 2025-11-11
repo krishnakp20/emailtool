@@ -216,7 +216,7 @@ const TicketView: React.FC = () => {
     !ticket.voc_id && 'VOC'
   ].filter(Boolean) as string[] : []
   
-  const _canReplyWithTags = canReply && hasAllTags
+
 
   if (isLoading) {
     return (
