@@ -30,6 +30,7 @@ class User(Base):
     id = Column(BigInteger, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
+    emp_code = Column(String(100), unique=True, index=True, nullable=True)
     role = Column(Enum(Role), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     password_hash = Column(String(255), nullable=False)

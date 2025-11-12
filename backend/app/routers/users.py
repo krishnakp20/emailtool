@@ -13,6 +13,7 @@ router = APIRouter()
 class UserCreate(BaseModel):
     name: str
     email: str
+    emp_code: Optional[str] = None
     role: str
     password: str
     is_active: bool = True
@@ -20,6 +21,7 @@ class UserCreate(BaseModel):
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
+    emp_code: Optional[str] = None
     role: Optional[str] = None
     password: Optional[str] = None
     is_active: Optional[bool] = None
@@ -28,6 +30,7 @@ class UserResponse(BaseModel):
     id: int
     name: str
     email: str
+    emp_code: Optional[str] = None
     role: Role
     is_active: bool
     created_at: datetime
@@ -49,6 +52,14 @@ async def create_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
+
+    # Check for duplicate emp_code if provided
+    if user_data.emp_code:
+        if db.query(User).filter(User.emp_code == user_data.emp_code).first():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Employee code already exists"
+            )
     
     # Create user
     # Convert string to Role enum if valid
@@ -63,6 +74,7 @@ async def create_user(
     user = User(
         name=user_data.name,
         email=user_data.email,
+        emp_code=user_data.emp_code,
         role=role_enum,
         password_hash=hash_password(user_data.password),
         is_active=user_data.is_active
@@ -95,6 +107,14 @@ async def create_first_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
         )
+
+    # Duplicate emp_code check
+    if user_data.emp_code:
+        if db.query(User).filter(User.emp_code == user_data.emp_code).first():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Employee code already exists"
+            )
     
     # Create user
     # Convert string to Role enum if valid
@@ -109,6 +129,7 @@ async def create_first_user(
     user = User(
         name=user_data.name,
         email=user_data.email,
+        emp_code=user_data.emp_code,
         role=role_enum,
         password_hash=hash_password(user_data.password),
         is_active=user_data.is_active
@@ -178,6 +199,15 @@ async def update_user(
                 detail="Email already registered"
             )
         user.email = user_data.email
+
+    # Handle emp_code update
+    if user_data.emp_code is not None:
+        existing_user = db.query(User).filter(
+            User.emp_code == user_data.emp_code, User.id != user_id
+        ).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Employee code already exists")
+        user.emp_code = user_data.emp_code
     
     if user_data.role is not None:
         # Convert string to Role enum if valid

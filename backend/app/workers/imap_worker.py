@@ -28,6 +28,7 @@ from app.workers.attachment_handler import AttachmentHandler
 import re
 import unicodedata
 from email.utils import parseaddr
+import textwrap
 
 
 def clean_email_text(text: str) -> str:
@@ -368,13 +369,22 @@ class IMAPWorker:
             self.db.add(message)
             
             # Send auto-ack
-            auto_ack_subject = f"[TKT-{ticket.id}] We've received your request"
-            auto_ack_body = f"""Thank you for contacting us. We have received your request and assigned it ticket number TKT-{ticket.id}.
+            auto_ack_subject = f"Mail Acknowledgment - Ticket #: [TKT-{ticket.id}]"
+            auto_ack_body = textwrap.dedent(f"""\
+            Dear ,
 
-Our team will review your inquiry and respond shortly.
+            Thank you for contacting us. We have received your mail and it has been logged under Ticket #: TKT-{ticket.id}.
 
-Best regards,
-Support Team"""
+            Our team is currently reviewing the details of your concern. You can expect an initial response within 72 hours (3 days), and we are committed to resolving the matter within 2–5 business days, depending on its complexity.
+
+            If you have any further details to share or would like to follow up, please feel free to reply to this email, quoting your ticket number for reference.
+
+            We appreciate your patience and assure you that your concern is receiving our full attention.
+
+            Warm regards,
+            MAS Callnet India Pvt. Ltd.
+            Customer Support Team
+            """)
             
             ack_message_id = send_mail(
                 to_email=from_email,
