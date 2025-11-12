@@ -403,7 +403,7 @@ const TicketView: React.FC = () => {
 
                 {/* Open in CRM Icon */}
                 <a
-                  href={`http://192.168.11.6/agent/OfflineTaggings/home?clientId=478&callingType=offline&ticket_id=${ticket.id}`}
+                  href={`http://192.168.11.6/agent/OfflineTaggings/home_crm?clientId=478&callingType=offline&ticket_id=${ticket.id}&userid=${currentUser?.emp_code || ''}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:text-blue-800"

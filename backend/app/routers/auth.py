@@ -52,6 +52,7 @@ async def login(
             "id": user.id,
             "name": user.name,
             "email": user.email,
+            "emp_code": user.emp_code,
             "role": user.role
         }
     ) 
