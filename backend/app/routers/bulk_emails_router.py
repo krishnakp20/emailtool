@@ -21,7 +21,9 @@ async def upload_bulk_email_file(file: UploadFile = File(...), db: Session = Dep
     if not file.filename.endswith((".xlsx", ".xls")):
         raise HTTPException(status_code=400, detail="Only Excel file allowed (.xlsx/.xls)")
 
-    df = pd.read_excel(file.file)
+    file_bytes = await file.read()
+    df = pd.read_excel(io.BytesIO(file_bytes))
+
     df.columns = df.columns.str.lower()
 
     if "email" not in df.columns or "content" not in df.columns:
