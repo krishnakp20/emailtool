@@ -81,6 +81,8 @@ class Ticket(Base):
     voc = relationship("CategoryVOC")
     priority = relationship("CategoryPriority")
     messages = relationship("TicketMessage", back_populates="ticket", order_by="TicketMessage.sent_at")
+    notes = relationship("TicketNote", back_populates="ticket", order_by="TicketNote.created_at", cascade="all, delete-orphan")
+
 
 class TicketMessage(Base):
     __tablename__ = "ticket_messages"
@@ -162,7 +164,39 @@ class SocialMediaPost(Base):
     media_url = Column(String(500), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
+
+
+class BulkEmailStatus(int, Enum):
+    pending = 0
+    sent = 1
+
+class BulkEmail(Base):
+    __tablename__ = "bulk_emails"
+
+    id = Column(BigInteger, primary_key=True, index=True)
+    email = Column(String(255), nullable=False, index=True)
+    content = Column(Text(length=4294967295), nullable=False)
+    status = Column(Integer, default=0, nullable=False)
+    response = Column(Text(length=4294967295), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+
+class TicketNote(Base):
+    __tablename__ = "ticket_notes"
+
+    id = Column(BigInteger, primary_key=True, index=True)
+    ticket_id = Column(BigInteger, ForeignKey("tickets.id"), nullable=False, index=True)
+    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=True)
+    note = Column(Text(length=4294967295), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    ticket = relationship("Ticket", back_populates="notes")
+    user = relationship("User")
+
+
+
 # Indexes for performance
 Index('idx_tickets_status_assigned_priority_updated', 'status', 'assigned_to', 'priority_id', 'updated_at')
 Index('idx_ticket_messages_ticket_id', 'ticket_id')
-Index('idx_social_posts_platform_post_id', 'platform', 'post_id') 
+Index('idx_social_posts_platform_post_id', 'platform', 'post_id')

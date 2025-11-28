@@ -10,9 +10,9 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 class AttachmentHandler:
-    def __init__(self, attachment_dir: str = "attachments"):
+    def __init__(self, attachment_dir: str):
         self.attachment_dir = Path(attachment_dir)
-        self.attachment_dir.mkdir(exist_ok=True)
+        self.attachment_dir.mkdir(parents=True, exist_ok=True)
     
     def extract_attachments(self, email_data: bytes, message_id: str) -> List[Dict]:
         """

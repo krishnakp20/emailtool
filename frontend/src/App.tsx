@@ -11,6 +11,7 @@ import AdminCategories from './pages/AdminCategories'
 import AdminTemplates from './pages/AdminTemplates'
 import AdminBlockedSenders from './pages/AdminBlockedSenders'
 import AdminBulkReassign from './pages/AdminBulkReassign'
+import AdminBulkEmails from './pages/AdminBulkEmails'
 import AdminExports from './pages/AdminExports'
 import AdminInstagram from './pages/AdminInstagram'
 import Layout from './components/Layout'
@@ -79,6 +80,11 @@ function AppRoutes() {
         <Route path="admin/bulk-reassign" element={
           <ProtectedRoute adminOnly>
             <AdminBulkReassign />
+          </ProtectedRoute>
+        } />
+        <Route path="admin/bulk-emails" element={
+          <ProtectedRoute adminOnly>
+            <AdminBulkEmails />
           </ProtectedRoute>
         } />
         <Route path="admin/exports" element={

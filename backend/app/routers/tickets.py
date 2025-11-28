@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+import json
+from fastapi import APIRouter, Depends, HTTPException, status, Query, File, UploadFile, Form
 from sqlalchemy.orm import Session, joinedload
 from pydantic import BaseModel
 from typing import List, Optional
@@ -13,6 +14,9 @@ from ..models import (
 )
 from ..services.mailer import send_mail
 from ..utils import get_pagination_params, apply_pagination
+from ..workers.attachment_handler import AttachmentHandler
+from ..config import settings
+
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -317,11 +321,11 @@ async def update_ticket(
     
     # Rule: Cannot manually close ticket - must send closing email via reply
     # Closing should only happen through the reply endpoint with closing email
-    if ticket_data.status == TicketStatus.Closed:
-        raise HTTPException(
-            status_code=400,
-            detail="Cannot close ticket directly. You must send a closing email to the customer using the 'Close with Reply' feature."
-        )
+    # if ticket_data.status == TicketStatus.Closed:
+    #     raise HTTPException(
+    #         status_code=400,
+    #         detail="Cannot close ticket directly. You must send a closing email to the customer using the 'Close with Reply' feature."
+    #     )
     
     # Update fields
     for field, value in ticket_data.dict(exclude_unset=True).items():
@@ -378,10 +382,16 @@ async def update_ticket(
 @router.post("/{ticket_id}/reply")
 async def reply_to_ticket(
     ticket_id: int,
-    reply_data: TicketReply,
+    text: str = Form(...),
+    template_id: Optional[int] = Form(None),
+    close_after: Optional[bool] = Form(False),
+    attachments: List[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+
+    reply_data = TicketReply(text=text, template_id=template_id, close_after=close_after)
+
     """Reply to ticket (adviser only)"""
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if not ticket:
@@ -453,6 +463,7 @@ async def reply_to_ticket(
         to_email=ticket.customer_email,
         subject=subject,
         body=body,
+        attachments=attachments,
         in_reply_to=in_reply_to
     )
     
@@ -471,6 +482,33 @@ async def reply_to_ticket(
         if has_previous_reply:
             # Reopen ticket when replying to a closed ticket
             should_reopen = True
+
+
+    saved_attachments = []
+    if attachments:
+        handler = AttachmentHandler(settings.ATTACHMENTS_ROOT)
+
+        msg_dir = f"msg_{ticket_id}"
+        dir_path = handler.attachment_dir / msg_dir
+        dir_path.mkdir(parents=True, exist_ok=True)
+
+        for file in attachments:
+            raw = await file.read()
+            await file.seek(0)
+
+            safe = handler._sanitize_filename(file.filename)
+            file_path = dir_path / safe
+
+            with open(file_path, "wb") as f:
+                f.write(raw)
+
+            saved_attachments.append({
+                "filename": file.filename,
+                "mime_type": file.content_type,
+                "file_path": f"{msg_dir}/{safe}",
+                "size": file_path.stat().st_size
+            })
+
     
     # Create outbound message record
     outbound_message = TicketMessage(
@@ -482,7 +520,8 @@ async def reply_to_ticket(
         body=body,
         smtp_message_id=message_id,
         in_reply_to=in_reply_to,
-        created_by=current_user.id
+        created_by=current_user.id,
+        attachments_json=json.dumps(saved_attachments)
     )
     
     db.add(outbound_message)

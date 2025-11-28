@@ -4,7 +4,11 @@ import axios from 'axios'
 
 interface ReplyBoxProps {
   ticketId: number
-  onReply: (text: string, templateId?: number) => Promise<void>
+  onReply: (
+    text: string,
+    templateId?: number,
+    attachments?: File[]
+  ) => Promise<void>
   disabled?: boolean
 }
 
@@ -18,6 +22,7 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({ ticketId, onReply, disabled = false
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [suggestions, setSuggestions] = useState<any[]>([])
   const [isChecking, setIsChecking] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -35,7 +40,7 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({ ticketId, onReply, disabled = false
   }, [])
 
 
-  // ✅ Function to check grammar in real-time using LanguageTool API
+  // Function to check grammar in real-time using LanguageTool API
   const checkGrammar = async (inputText: string) => {
     if (!inputText.trim()) {
       setSuggestions([])
@@ -89,7 +94,9 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({ ticketId, onReply, disabled = false
 
     setIsLoading(true)
     try {
-      await onReply(text.trim(), templateId)
+      await onReply(text.trim(), templateId, attachments)
+      setAttachments([])
+      if (fileInputRef.current) fileInputRef.current.value = ""
       setText('')
       setTemplateId(undefined)
       setSelectedTemplate(null)
@@ -153,7 +160,7 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({ ticketId, onReply, disabled = false
   }
 
 
-  // ✅ Auto-correct button — applies first LanguageTool suggestion
+  // Auto-correct button — applies first LanguageTool suggestion
   const applyCorrections = () => {
     let corrected = text
     suggestions.forEach((s) => {
@@ -165,6 +172,49 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({ ticketId, onReply, disabled = false
     setText(corrected)
     setSuggestions([])
   }
+
+
+  const MAX_FILE_SIZE = 25 * 1024 * 1024        // 25MB general max
+  const MAX_VIDEO_SIZE = 5 * 1024 * 1024        // 5MB video limit
+
+  const allowedTypes = [
+      "image/jpeg", "image/png", "application/pdf", "text/plain",
+      "application/msword", "application/vnd.ms-excel", "application/zip",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "video/mp4", "video/webm", "video/ogg"
+  ]
+
+  const [attachments, setAttachments] = useState<File[]>([])
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || [])
+      const valid: File[] = []
+
+      for (let file of files) {
+        // reject invalid type
+        if (!allowedTypes.includes(file.type)) {
+          alert(`❌ File not allowed → ${file.name}`)
+          continue
+        }
+
+        // separate rule for video <5MB
+        if (file.type.startsWith("video") && file.size > MAX_VIDEO_SIZE) {
+          alert(`❌ Video too large → ${file.name}\nMax allowed size is 5MB`)
+          continue
+        }
+
+        // for all other files max 25MB
+        if (!file.type.startsWith("video") && file.size > MAX_FILE_SIZE) {
+          alert(`❌ File too large → ${file.name} (max 25MB)`)
+          continue
+        }
+
+        valid.push(file)
+      }
+      setAttachments(prev => [...prev, ...valid])
+  }
+
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -288,6 +338,44 @@ const ReplyBox: React.FC<ReplyBoxProps> = ({ ticketId, onReply, disabled = false
               {text.length} characters
             </span>
           </div>
+        </div>
+
+        {/* Attachments Upload  */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Attach Files
+          </label>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            onChange={handleFileUpload}
+            accept={allowedTypes.join(",")}
+            className="block w-full text-sm text-gray-700 border border-gray-300 rounded-lg cursor-pointer bg-white focus:ring-blue-500 focus:border-blue-500 p-2"
+          />
+
+          {/* File Preview */}
+          {attachments.length > 0 && (
+            <div className="mt-3 space-y-2">
+              {attachments.map((file, i) => (
+                <div key={i} className="flex justify-between items-center bg-gray-100 px-3 py-2 rounded">
+
+                  <span className="text-sm text-gray-800 truncate max-w-[70%]">
+                    📎 {file.name} – {(file.size / 1024 / 1024).toFixed(2)}MB
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => setAttachments(prev => prev.filter((_, idx) => idx !== i))}
+                    className="text-red-500 hover:text-red-700 text-sm"
+                  >
+                    Remove ✖
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Submit Button */}

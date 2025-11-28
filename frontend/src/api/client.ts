@@ -179,22 +179,46 @@ export const ticketsAPI = {
     return response.data
   },
 
-  reply: async (id: number, text: string, template_id?: number, close_after?: boolean): Promise<any> => {
-    const payload: Record<string, any> = {
-        text: text.trim(),
-        close_after: close_after ?? false,
-    }
-    if (template_id) {
-        payload.template_id = template_id
-    }
-    const response = await apiClient.post(`/tickets/${id}/reply`, { text, template_id, close_after })
-    return response.data
+//   reply: async (id: number, text: string, template_id?: number, close_after?: boolean): Promise<any> => {
+//     const payload: Record<string, any> = {
+//         text: text.trim(),
+//         close_after: close_after ?? false,
+//     }
+//     if (template_id) {
+//         payload.template_id = template_id
+//     }
+//     const response = await apiClient.post(`/tickets/${id}/reply`, { text, template_id, close_after })
+//     return response.data
+//   },
+
+  reply: async (id: number, text: string, template_id?: number, close_after?: boolean, files?: File[]) => {
+    const form = new FormData();
+    form.append("text", text);
+    form.append("close_after", String(close_after ?? false));
+
+    if (template_id) form.append("template_id", String(template_id));
+    if (files) files.forEach(file => form.append("attachments", file)); // ⬅ videos/images
+
+    return apiClient.post(`/tickets/${id}/reply`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
   },
+
 
   reassign: async (id: number, assigned_to: number): Promise<any> => {
     const response = await apiClient.post(`/tickets/${id}/reassign`, { assigned_to })
     return response.data
+  },
+
+
+  addNote(ticketId: number, note: string) {
+      return apiClient.post(`/ticket-notes/${ticketId}`, { note });
+  },
+
+  getNotes(ticketId: number) {
+      return apiClient.get(`/ticket-notes/${ticketId}`).then(res => res.data);
   }
+
 }
 
 // Users API (admin only)
@@ -292,19 +316,33 @@ export const templatesAPI = {
 }
 
 // Email API
+// export const emailsAPI = {
+//   send: async (data: {
+//     to: string
+//     cc?: string
+//     bcc?: string
+//     subject: string
+//     body: string
+//     template_id?: number
+//   }): Promise<any> => {
+//     const response = await apiClient.post('/emails/send', data)
+//     return response.data
+//   }
+// }
+
+
 export const emailsAPI = {
-  send: async (data: {
-    to: string
-    cc?: string
-    bcc?: string
-    subject: string
-    body: string
-    template_id?: number
-  }): Promise<any> => {
-    const response = await apiClient.post('/emails/send', data)
-    return response.data
+  send: async (formData: FormData): Promise<any> => {
+    const response = await apiClient.post('/emails/send', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+    return response.data;
   }
-}
+};
+
+
 
 // Blocked Senders API (admin only)
 export const blockedSendersAPI = {
@@ -321,6 +359,26 @@ export const blockedSendersAPI = {
   delete: async (id: number): Promise<any> => {
     const response = await apiClient.delete(`/blocked-senders/${id}`)
     return response.data
+  }
+}
+
+
+export const bulkEmailAPI = {
+  upload: async (file: File) => {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    return apiClient.post("/bulk-emails/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    })
+  },
+
+  download: async () => {
+    return apiClient.get("/bulk-emails/download", { responseType: "blob" })
+  },
+
+  sendAll: async () => {
+    return apiClient.post("/bulk-emails/send-all")
   }
 }
 

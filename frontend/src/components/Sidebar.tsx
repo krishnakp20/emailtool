@@ -255,6 +255,29 @@ const Sidebar: React.FC = () => {
                 Bulk Reassign
               </NavLink>
               <NavLink
+                  to="/admin/bulk-emails"
+                  className={({ isActive }) =>
+                    `flex items-center px-2 py-1.5 text-sm rounded ${
+                      isActive
+                        ? 'bg-purple-100 text-purple-700 font-medium'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`
+                  }
+              >
+                  {/* Bulk Email Icon */}
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2v-5M3 12v7a2 2 0 002 2h14"
+                    />
+                  </svg>
+
+                  Bulk Emails
+              </NavLink>
+
+              <NavLink
                 to="/admin/exports"
                 className={({ isActive }) =>
                   `flex items-center px-2 py-1.5 text-sm rounded ${

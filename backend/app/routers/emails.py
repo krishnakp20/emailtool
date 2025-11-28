@@ -1,12 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
+import json
+from pathlib import Path
+
+from fastapi import APIRouter, Depends, HTTPException, Form, File, UploadFile
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 from ..db import get_db
 from ..models import User
 from ..deps import get_current_user
 from ..services.mailer import send_mail
 from pydantic import BaseModel, EmailStr
 import logging
+from ..config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +83,13 @@ async def debug_sent_emails(
 
 @router.post("/send")
 async def send_email(
-    request: SendEmailRequest,
+    to: str = Form(...),
+    cc: Optional[str] = Form(None),
+    bcc: Optional[str] = Form(None),
+    subject: str = Form(...),
+    body: str = Form(...),
+    template_id: Optional[int] = Form(None),
+    attachments: List[UploadFile] = File(None),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -88,9 +98,9 @@ async def send_email(
     """
     try:
         # Parse email addresses
-        to_emails = [email.strip() for email in request.to.split(',') if email.strip()]
-        cc_emails = [email.strip() for email in request.cc.split(',')] if request.cc else []
-        bcc_emails = [email.strip() for email in request.bcc.split(',')] if request.bcc else []
+        to_emails = [email.strip() for email in to.split(',') if email.strip()]
+        cc_emails = [email.strip() for email in cc.split(',')] if cc else []
+        bcc_emails = [email.strip() for email in bcc.split(',')] if bcc else []
         
         # Validate that we have at least one recipient
         if not to_emails:
@@ -98,14 +108,26 @@ async def send_email(
         
         # For now, send to the first recipient (we can enhance this later for multiple recipients)
         primary_recipient = to_emails[0]
+
+        prepared_files = []
+
+        if attachments:
+            for file in attachments:
+                file_bytes = await file.read()
+                await file.seek(0)
+                prepared_files.append({
+                    "file": file,
+                    "bytes": file_bytes
+                })
         
         # Send the email
         message_id = send_mail(
             to_email=primary_recipient,
-            subject=request.subject,
-            body=request.body,
+            subject=subject,
+            body=body,
             cc_emails=cc_emails if cc_emails else None,
-            bcc_emails=bcc_emails if bcc_emails else None
+            bcc_emails=bcc_emails if bcc_emails else None,
+            attachments=attachments
         )
         
         if not message_id:
@@ -120,13 +142,40 @@ async def send_email(
         # Always create a new ticket for sent emails (don't reuse existing ones)
         ticket = Ticket(
             customer_email=primary_recipient,
-            subject=request.subject,
+            subject=subject,
             status=TicketStatus.Open,
             assigned_to=current_user.id
         )
         db.add(ticket)
         db.flush()  # Get the ticket ID
         logger.info(f"Created new ticket #{ticket.id} for sent email")
+
+        from ..workers.attachment_handler import AttachmentHandler
+        handler = AttachmentHandler(settings.ATTACHMENTS_ROOT)
+
+        saved_attachments = []
+
+        if prepared_files:
+            msg_dir = f"msg_{ticket.id}"
+            message_dir = handler.attachment_dir / msg_dir
+            message_dir.mkdir(parents=True, exist_ok=True)
+
+            for item in prepared_files:
+                file = item["file"]
+                raw = item["bytes"]
+
+                safe_name = handler._sanitize_filename(file.filename)
+                file_path = message_dir / safe_name
+
+                with open(file_path, "wb") as f:
+                    f.write(raw)
+
+                saved_attachments.append({
+                    "filename": file.filename,
+                    "mime_type": file.content_type,
+                    "file_path": f"{msg_dir}/{safe_name}",
+                    "size": file_path.stat().st_size
+                })
         
         # Create message record
         message = TicketMessage(
@@ -134,10 +183,11 @@ async def send_email(
             direction=MsgDir.outbound,
             from_email=current_user.email,
             to_email=primary_recipient,
-            subject=request.subject,
-            body=request.body,
+            subject=subject,
+            body=body,
             smtp_message_id=message_id,
-            created_by=current_user.id
+            created_by=current_user.id,
+            attachments_json=json.dumps(saved_attachments)
         )
         
         db.add(message)
@@ -149,6 +199,7 @@ async def send_email(
             "message": "Email sent successfully",
             "message_id": message_id,
             "ticket_id": ticket.id,
+            "attachments": saved_attachments,
             "recipients": {
                 "to": to_emails,
                 "cc": cc_emails,

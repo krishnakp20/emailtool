@@ -20,14 +20,20 @@ const TicketView: React.FC = () => {
   const [showReassignModal, setShowReassignModal] = useState(false)
   const [selectedAdviserId, setSelectedAdviserId] = useState<number | null>(null)
   const [isReassigning, setIsReassigning] = useState(false)
-  const [showCloseReplyModal, setShowCloseReplyModal] = useState(false)
-  const [closingReplyText, setClosingReplyText] = useState('')
-  const [isSendingClosingReply, setIsSendingClosingReply] = useState(false)
+//   const [showCloseReplyModal, setShowCloseReplyModal] = useState(false)
+//   const [closingReplyText, setClosingReplyText] = useState('')
+//   const [isSendingClosingReply, setIsSendingClosingReply] = useState(false)
+
+  const [showNoteModal, setShowNoteModal] = useState(false)
+  const [noteText, setNoteText] = useState('')
+  const [isSavingNote, setIsSavingNote] = useState(false)
+  const [notes, setNotes] = useState<any[]>([])
 
   useEffect(() => {
     if (id) {
       fetchTicket()
       fetchMessages()
+      fetchNotes()
     }
   }, [id])
 
@@ -36,6 +42,37 @@ const TicketView: React.FC = () => {
       fetchAdvisers()
     }
   }, [currentUser])
+
+
+  const handleAddNote = async () => {
+      if (!noteText.trim()) return
+      setIsSavingNote(true)
+
+      try {
+        await ticketsAPI.addNote(parseInt(id!), noteText) // <-- backend route needed
+        setNoteText('')
+        setShowNoteModal(false)
+        await fetchNotes()  // refresh notes/messages
+        setSuccess("Note added successfully")
+        setTimeout(() => setSuccess(''), 3000)
+      } catch (err:any){
+        setError(err.response?.data?.detail || "Failed to save note")
+      } finally {
+        setIsSavingNote(false)
+      }
+  }
+
+  const fetchNotes = async () => {
+      try {
+        const data = await ticketsAPI.getNotes(parseInt(id!))
+
+        setNotes(data)
+
+      } catch (error) {
+        console.log("Fetching failed", error)
+      }
+  }
+
 
   const fetchTicket = async () => {
     try {
@@ -66,7 +103,7 @@ const TicketView: React.FC = () => {
     }
   }
 
-  const handleReply = async (text: string, templateId?: number) => {
+  const handleReply = async (text: string, templateId?: number, attachments?: File[]) => {
     if (!ticket) return
     
     // Rule: Cannot reply without tags (priority, language, VOC)
@@ -80,7 +117,7 @@ const TicketView: React.FC = () => {
     }
     
     try {
-      await ticketsAPI.reply(parseInt(id!), text, templateId)
+      await ticketsAPI.reply(Number(id), text, templateId, false, attachments)
       // Refresh messages and ticket after reply
       await fetchMessages()
       await fetchTicket() // Refresh ticket - status may change to Open if it was closed
@@ -101,12 +138,10 @@ const TicketView: React.FC = () => {
     if (!ticket) return
     
     // Rule: ALWAYS require closing email when closing ticket (no exceptions)
-    if (newStatus === 'Closed') {
-      // Always open modal to require closing reply - no exceptions
-      // Store the original status to restore if cancelled
-      setShowCloseReplyModal(true)
-      return
-    }
+//     if (newStatus === 'Closed') {
+//       setShowCloseReplyModal(true)
+//       return
+//     }
     
     // For Open/Pending, just update normally
     setIsUpdating(true)
@@ -126,45 +161,45 @@ const TicketView: React.FC = () => {
     }
   }
 
-  const handleCloseWithReply = async () => {
-    if (!closingReplyText.trim() || !ticket) return
-    
-    // Rule: Cannot reply without tags (priority, language, VOC)
-    const missingTags = []
-    if (!ticket.priority_id) missingTags.push('Priority')
-    if (!ticket.language_id) missingTags.push('Language')
-    if (!ticket.voc_id) missingTags.push('VOC')
-    
-    if (missingTags.length > 0) {
-      setError(`Cannot close ticket. Please set tags first: ${missingTags.join(', ')}`)
-      return
-    }
-    
-    setIsSendingClosingReply(true)
-    setError('')
-    
-    try {
-      // Send the closing reply and close in the same request
-      await ticketsAPI.reply(parseInt(id!), closingReplyText, undefined, true)
-      
-      // Refresh ticket to get Closed status
-      const updated = await ticketsAPI.get(parseInt(id!))
-      setTicket(updated)
-      
-      // Refresh messages
-      await fetchMessages()
-      
-      // Close modal and reset
-      setShowCloseReplyModal(false)
-      setClosingReplyText('')
-      setSuccess('Closing email sent successfully! Ticket has been closed.')
-      setTimeout(() => setSuccess(''), 5000)
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to send closing email')
-    } finally {
-      setIsSendingClosingReply(false)
-    }
-  }
+//   const handleCloseWithReply = async () => {
+//     if (!closingReplyText.trim() || !ticket) return
+//
+//     // Rule: Cannot reply without tags (priority, language, VOC)
+//     const missingTags = []
+//     if (!ticket.priority_id) missingTags.push('Priority')
+//     if (!ticket.language_id) missingTags.push('Language')
+//     if (!ticket.voc_id) missingTags.push('VOC')
+//
+//     if (missingTags.length > 0) {
+//       setError(`Cannot close ticket. Please set tags first: ${missingTags.join(', ')}`)
+//       return
+//     }
+//
+//     setIsSendingClosingReply(true)
+//     setError('')
+//
+//     try {
+//       // Send the closing reply and close in the same request
+//       await ticketsAPI.reply(parseInt(id!), closingReplyText, undefined, true)
+//
+//       // Refresh ticket to get Closed status
+//       const updated = await ticketsAPI.get(parseInt(id!))
+//       setTicket(updated)
+//
+//       // Refresh messages
+//       await fetchMessages()
+//
+//       // Close modal and reset
+//       setShowCloseReplyModal(false)
+//       setClosingReplyText('')
+//       setSuccess('Closing email sent successfully! Ticket has been closed.')
+//       setTimeout(() => setSuccess(''), 5000)
+//     } catch (err: any) {
+//       setError(err.response?.data?.detail || 'Failed to send closing email')
+//     } finally {
+//       setIsSendingClosingReply(false)
+//     }
+//   }
 
   const handleTagUpdate = async (updates: Partial<Ticket>) => {
     if (!ticket) return
@@ -323,7 +358,7 @@ const TicketView: React.FC = () => {
       )}
       
       {/* Close Ticket with Reply Modal */}
-      {showCloseReplyModal && (
+      {/* {showCloseReplyModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4">
             <div className="px-6 py-4 border-b border-gray-200">
@@ -334,7 +369,7 @@ const TicketView: React.FC = () => {
                 You must send a closing email to the customer before closing this ticket.
               </p>
             </div>
-            
+
             <div className="px-6 py-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Closing Message *
@@ -351,7 +386,7 @@ const TicketView: React.FC = () => {
                 This email will be sent to the customer and then the ticket will be closed.
               </p>
             </div>
-            
+
             <div className="px-6 py-4 bg-gray-50 flex justify-end space-x-3 rounded-b-lg">
               <button
                 onClick={() => {
@@ -378,7 +413,7 @@ const TicketView: React.FC = () => {
                 {isSendingClosingReply ? 'Sending...' : 'Send & Close Ticket'}
               </button>
             </div>
-            
+
             {!hasAllTags && (
               <div className="px-6 pb-4">
                 <div className="bg-red-50 border border-red-200 rounded-lg p-3">
@@ -390,7 +425,7 @@ const TicketView: React.FC = () => {
             )}
           </div>
         </div>
-      )}
+      )} */}
       
       {/* Header */}
       <div className="bg-white shadow rounded-lg p-4">
@@ -463,6 +498,14 @@ const TicketView: React.FC = () => {
               </div>
             )}
           </div>
+
+          {/* Add ticket note button */}
+          <button
+              onClick={() => setShowNoteModal(true)}
+              className="flex items-center gap-1 text-xs px-2 py-1 bg-gray-800 text-white rounded hover:bg-black"
+          >
+              ✏️ Add Note
+          </button>
           
           {/* Customer Info */}
           <div className="text-right">
@@ -522,8 +565,10 @@ const TicketView: React.FC = () => {
           )}
         <ReplyBox
           ticketId={ticket.id}
-          onReply={handleReply}
-            disabled={isUpdating || !hasAllTags}
+          onReply={(text: string, templateId?: number, attachments?: File[]) =>
+            handleReply(text, templateId, attachments)
+          }
+          disabled={isUpdating || !hasAllTags}
         />
         </>
       )}
@@ -556,6 +601,28 @@ const TicketView: React.FC = () => {
         <div className="px-3 text-xs text-gray-500">Message History</div>
         <div className="flex-1 border-t border-gray-200"></div>
       </div>
+
+
+
+      {/* Notes Section — at the top */}
+      {notes.length > 0 && (
+          <div className="bg-yellow-50 border border-yellow-300 rounded mb-0 p-2">
+            <h2 className="text-sm font-semibold text-gray-900">📝 Internal Notes</h2>
+
+            <div className="mt-1 space-y-1">
+              {notes.map((note) => (
+                <div key={note.id} className="p-1 bg-white border rounded text-sm text-gray-700">
+                  <div className="flex justify-between text-xs text-gray-500 mb-0">
+                    <span>{note.created_by}</span>
+                    <span>{new Date(note.created_at).toLocaleString()}</span>
+                  </div>
+                  <div className="whitespace-pre-wrap">{note.note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+      )}
+
 
       {/* Messages Thread */}
       <div className="bg-white shadow rounded-lg">
@@ -605,6 +672,43 @@ const TicketView: React.FC = () => {
           ))}
         </div>
       </div>
+
+
+      {/* Add Note Modal */}
+      {showNoteModal && (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white w-96 p-4 rounded shadow-lg">
+            <h2 className="text-sm font-semibold mb-2">Add Internal Note</h2>
+
+            <textarea
+              rows={4}
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              className="w-full border rounded p-2 text-sm"
+              placeholder="Write internal note here..."
+            ></textarea>
+
+            <div className="flex justify-end mt-3 space-x-2">
+              <button
+                onClick={() => setShowNoteModal(false)}
+                className="px-3 py-1 text-xs bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleAddNote}
+                disabled={isSavingNote}
+                className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              >
+                {isSavingNote ? "Saving..." : "Save Note"}
+              </button>
+            </div>
+          </div>
+      </div>
+      )}
+
+
     </div>
   )
 }

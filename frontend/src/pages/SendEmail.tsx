@@ -30,6 +30,7 @@ const SendEmail: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   useEffect(() => {
     fetchTemplates()
@@ -122,16 +123,31 @@ const SendEmail: React.FC = () => {
     try {
       setIsSubmitting(true)
       setError('')
+
+
+      const formData = new FormData();
+      formData.append("to", form.to);
+      formData.append("cc", form.cc || "");
+      formData.append("bcc", form.bcc || "");
+      formData.append("subject", form.subject);
+      formData.append("body", form.body);
+
+      attachments.forEach((file) => {
+        formData.append("attachments", file);
+      });
+
+      const response = await emailsAPI.send(formData);
+
       
-      const response = await emailsAPI.send({
-        to: form.to,
-        cc: form.cc || undefined,
-        bcc: form.bcc || undefined,
-        subject: form.subject,
-        body: form.body,
-        template_id: selectedTemplate?.id
-      })
-      
+//       const response = await emailsAPI.send({
+//         to: form.to,
+//         cc: form.cc || undefined,
+//         bcc: form.bcc || undefined,
+//         subject: form.subject,
+//         body: form.body,
+//         template_id: selectedTemplate?.id
+//       })
+
       setSuccess(`Email sent successfully! Ticket #${response.ticket_id} has been created.`)
       setForm({
         to: '',
@@ -166,6 +182,55 @@ const SendEmail: React.FC = () => {
     setError('')
     setSuccess('')
   }
+
+  const MAX_FILE_SIZE = 25 * 1024 * 1024;       // 25MB
+  const MIN_VIDEO_SIZE = 5 * 1024 * 1024;       // 5MB (warn if smaller)
+  const allowedTypes = [
+      "image/jpeg", "image/png", "application/pdf", "text/plain",
+      "application/msword", "application/vnd.ms-excel", "application/zip",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "video/mp4", "video/mpeg", "video/ogg"
+  ];
+
+  // 📌 Handle file selection
+  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files) return;
+
+      const selectedFiles = Array.from(e.target.files);
+      const validFiles: File[] = [];
+      let message = "";
+
+      selectedFiles.forEach(file => {
+
+        // ❌ Check type
+        if (!allowedTypes.includes(file.type)) {
+          message += `Invalid file type: ${file.name}\n`;
+          return;
+        }
+
+        // ❌ Check size > 25MB
+        if (file.size > MAX_FILE_SIZE) {
+          message += `File too large (>25MB): ${file.name}\n`;
+          return;
+        }
+
+        // ⚠ Optional warning for small video (<5MB)
+        if (file.type.startsWith("video/") && file.size < MIN_VIDEO_SIZE) {
+          message += `Warning: ${file.name} video <5MB\n`;
+          validFiles.push(file);
+          return;
+        }
+
+        validFiles.push(file);
+      });
+
+      if (message) setError(message.trim());
+      else setError("");
+
+      setAttachments(prev => [...prev, ...validFiles]); // 🆗 Append files
+  };
+
 
   if (!currentUser) {
     return (
@@ -363,6 +428,35 @@ const SendEmail: React.FC = () => {
               >
                 Cancel
               </button>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Attachments</label>
+
+              <input
+                  type="file"
+                  multiple
+                  onChange={handleFiles}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+
+              {attachments.length > 0 && (
+                  <ul className="mt-2 text-sm text-gray-700 space-y-1">
+                    {attachments.map((file, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        📎 {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                        <button
+                          className="text-red-500 text-xs hover:underline"
+                          onClick={() =>
+                            setAttachments(attachments.filter((_, i) => i !== index))
+                          }
+                        >
+                          ❌ Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+              )}
             </div>
             
             <button
