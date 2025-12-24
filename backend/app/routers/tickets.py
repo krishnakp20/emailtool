@@ -126,11 +126,15 @@ async def list_tickets(
         )
     
     # Advisers can only see their assigned tickets (unless admin)
-    if current_user.role == Role.adviser:
+    if current_user.role == Role.adviser and not search:
         query = query.filter(Ticket.assigned_to == current_user.id)
-        logger.info(f"Filtering tickets for adviser {current_user.id} (user ID: {current_user.id})")
+        logger.info(
+            f"Filtering tickets for adviser {current_user.id} (no search)"
+        )
     else:
-        logger.info(f"Admin user {current_user.id} - showing all tickets")
+        logger.info(
+            f"Global ticket view for user {current_user.id} (role: {current_user.role}, search={search})"
+        )
     
     # Order by updated_at desc (must be before pagination)
     query = query.order_by(Ticket.updated_at.desc())
