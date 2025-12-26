@@ -82,6 +82,24 @@ def extract_email_address(raw_value: str) -> str:
     return match.group(0).lower() if match else raw_value.strip().lower()
 
 
+def resolve_customer_email(msg, from_email: str, body_text: str | None = None) -> str:
+    """
+    Resolve real customer email.
+    Shopify emails come from mailer@shopify.com but Reply-To is customer.
+    """
+    from_email = from_email.lower()
+
+    # Shopify override
+    if from_email.endswith("@shopify.com"):
+        reply_to = extract_email_address(msg.get("reply-to", ""))
+        if reply_to:
+            return reply_to.lower()
+
+    # Default behavior
+    return from_email
+
+
+
 def normalize_subject(subject: str) -> str:
     if not subject:
         return ""
@@ -199,8 +217,21 @@ class IMAPWorker:
             msg = email.message_from_bytes(full_email, policy=policy.default)
 
             # Extract basic email info
-            from_email = extract_email_address(msg.get('from', ''))
-            logger.info(f"Raw From: {msg.get('from', '')} → Extracted: {from_email}")
+            # from_email = extract_email_address(msg.get('from', ''))
+            # logger.info(f"Raw From: {msg.get('from', '')} → Extracted: {from_email}")
+
+            raw_from = extract_email_address(msg.get('from', ''))
+            body_text = self.extract_text_from_email(msg)
+
+            customer_email = resolve_customer_email(msg, raw_from, body_text)
+
+            logger.info(
+                f"Raw From: {msg.get('from', '')} → "
+                f"Resolved Customer Email: {customer_email}"
+            )
+
+            from_email = customer_email
+
             # subject = msg.get('subject', '')
             raw_subject = msg.get('subject', '') or ""
             subject = normalize_subject(raw_subject)
