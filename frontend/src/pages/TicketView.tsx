@@ -238,10 +238,12 @@ const TicketView: React.FC = () => {
     setShowReassignModal(true)
   }
 
-  const canReply = ticket && (
-    currentUser?.role === 'admin' || 
-    (currentUser?.role === 'adviser' && ticket.assigned_to === currentUser.id)
-  )
+//   const canReply = ticket && (
+//     currentUser?.role === 'admin' ||
+//     (currentUser?.role === 'adviser' && ticket.assigned_to === currentUser.id)
+//   )
+
+  const canReply = true
   
   // Check if all required tags are set
   const hasAllTags = ticket && ticket.priority_id && ticket.language_id && ticket.voc_id

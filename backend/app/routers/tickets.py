@@ -213,9 +213,9 @@ async def get_ticket(
         raise HTTPException(status_code=404, detail="Ticket not found")
     
     # Check access permissions
-    if (current_user.role == Role.adviser and 
-        ticket.assigned_to != current_user.id):
-        raise HTTPException(status_code=403, detail="Access denied")
+    # if (current_user.role == Role.adviser and
+    #     ticket.assigned_to != current_user.id):
+    #     raise HTTPException(status_code=403, detail="Access denied")
     
     # Convert SQLAlchemy object to dictionary for Pydantic
     ticket_dict = {
@@ -268,9 +268,9 @@ async def get_ticket_messages(
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     
-    if (current_user.role == Role.adviser and 
-        ticket.assigned_to != current_user.id):
-        raise HTTPException(status_code=403, detail="Access denied")
+    # if (current_user.role == Role.adviser and
+    #     ticket.assigned_to != current_user.id):
+    #     raise HTTPException(status_code=403, detail="Access denied")
     
     # Get messages
     query = db.query(TicketMessage).filter(TicketMessage.ticket_id == ticket_id)
@@ -315,9 +315,9 @@ async def update_ticket(
         raise HTTPException(status_code=404, detail="Ticket not found")
     
     # Check permissions
-    if current_user.role == Role.adviser:
-        if ticket.assigned_to != current_user.id:
-            raise HTTPException(status_code=403, detail="Can only modify assigned tickets")
+    # if current_user.role == Role.adviser:
+    #     if ticket.assigned_to != current_user.id:
+    #         raise HTTPException(status_code=403, detail="Can only modify assigned tickets")
         
         # Advisers can only update status and categories, not assignment
         if ticket_data.assigned_to is not None:
@@ -402,9 +402,9 @@ async def reply_to_ticket(
         raise HTTPException(status_code=404, detail="Ticket not found")
     
     # Check permissions
-    if current_user.role == Role.adviser:
-        if ticket.assigned_to != current_user.id:
-            raise HTTPException(status_code=403, detail="Can only reply to assigned tickets")
+    # if current_user.role == Role.adviser:
+    #     if ticket.assigned_to != current_user.id:
+    #         raise HTTPException(status_code=403, detail="Can only reply to assigned tickets")
     
     # Rule: Cannot reply without tags (priority, language, VOC)
     missing_tags = []
