@@ -16,6 +16,7 @@ from ..services.mailer import send_mail
 from ..utils import get_pagination_params, apply_pagination
 from ..workers.attachment_handler import AttachmentHandler
 from ..config import settings
+from sqlalchemy import or_, and_
 
 
 router = APIRouter()
@@ -118,13 +119,28 @@ async def list_tickets(
     if unassigned:
         query = query.filter(Ticket.assigned_to.is_(None))
     
+    # if search:
+    #     search_filter = f"%{search}%"
+    #     query = query.filter(
+    #         (Ticket.subject.contains(search_filter)) |
+    #         (Ticket.customer_email.contains(search_filter))
+    #     )
+
     if search:
+        search = search.strip()
         search_filter = f"%{search}%"
-        query = query.filter(
-            (Ticket.subject.contains(search_filter)) |
-            (Ticket.customer_email.contains(search_filter))
-        )
-    
+
+        query = query.outerjoin(
+            TicketMessage,
+            TicketMessage.ticket_id == Ticket.id
+        ).filter(
+            or_(
+                Ticket.subject.ilike(search_filter),
+                Ticket.customer_email.ilike(search_filter),
+                TicketMessage.body.ilike(search_filter)
+            )
+        ).distinct()
+
     # Advisers can only see their assigned tickets (unless admin)
     if current_user.role == Role.adviser and not search:
         query = query.filter(Ticket.assigned_to == current_user.id)
