@@ -17,7 +17,7 @@ from ..utils import get_pagination_params, apply_pagination
 from ..workers.attachment_handler import AttachmentHandler
 from ..config import settings
 from sqlalchemy import or_, and_
-
+from ..services.feedback_mailer import create_and_send_feedback
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -348,11 +348,17 @@ async def update_ticket(
     #     )
     
     # Update fields
+    was_closed = ticket.status == TicketStatus.Closed
+
     for field, value in ticket_data.dict(exclude_unset=True).items():
         setattr(ticket, field, value)
     
     db.commit()
     db.refresh(ticket)
+
+    # Send feedback if status changed to closed
+    if ticket.status == TicketStatus.Closed and not was_closed:
+        create_and_send_feedback(db, ticket)
     
     # Reload with relationships
     ticket = db.query(Ticket).options(
@@ -551,6 +557,8 @@ async def reply_to_ticket(
         ticket.status = TicketStatus.Open
 
     # Close ticket if explicitly requested via close_after flag
+    was_closed = ticket.status == TicketStatus.Closed
+
     if reply_data.close_after:
         ticket.status = TicketStatus.Closed
     
@@ -558,6 +566,9 @@ async def reply_to_ticket(
     ticket.updated_at = datetime.utcnow()
     
     db.commit()
+
+    if reply_data.close_after and not was_closed:
+        create_and_send_feedback(db, ticket)
     
     return {"message": "Reply sent successfully", "message_id": message_id}
 

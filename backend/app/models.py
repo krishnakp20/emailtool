@@ -82,6 +82,12 @@ class Ticket(Base):
     priority = relationship("CategoryPriority")
     messages = relationship("TicketMessage", back_populates="ticket", order_by="TicketMessage.sent_at")
     notes = relationship("TicketNote", back_populates="ticket", order_by="TicketNote.created_at", cascade="all, delete-orphan")
+    feedback = relationship(
+        "TicketFeedback",
+        back_populates="ticket",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
 
 
 class TicketMessage(Base):
@@ -194,6 +200,23 @@ class TicketNote(Base):
     ticket = relationship("Ticket", back_populates="notes")
     user = relationship("User")
 
+
+
+
+class TicketFeedback(Base):
+    __tablename__ = "ticket_feedback"
+
+    id = Column(BigInteger, primary_key=True, index=True)
+
+    ticket_id = Column(BigInteger, ForeignKey("tickets.id"), nullable=False, unique=True)
+    support_rating = Column(Integer, nullable=True)
+    delivery_rating = Column(Integer, nullable=True)
+    product_rating = Column(Integer, nullable=True)
+    token = Column(String(255), unique=True, nullable=False, index=True)
+    submitted_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    ticket = relationship("Ticket", back_populates="feedback")
 
 
 # Indexes for performance

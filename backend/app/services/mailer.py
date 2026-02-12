@@ -54,7 +54,15 @@ def send_mail(
             msg['References'] = in_reply_to
         
         # Add body
-        msg.attach(MIMEText(body, 'plain'))
+        body_part = MIMEMultipart("alternative")
+
+        # Plain fallback
+        body_part.attach(MIMEText("Please view this email in HTML format.", "plain", "utf-8"))
+
+        # HTML content
+        body_part.attach(MIMEText(body, "html", "utf-8"))
+
+        msg.attach(body_part)
 
         # Attach files
         if attachments and isinstance(attachments, list):

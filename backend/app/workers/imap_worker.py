@@ -238,9 +238,12 @@ class IMAPWorker:
 
             received_date = msg.get('date')
 
-            if not from_email or not subject:
-                logger.error(f"Missing from_email or subject for message {message_id}")
+            if not from_email:
+                logger.error(f"Missing from_email for message {message_id}")
                 return False
+
+            if not subject or not subject.strip():
+                subject = "(No Subject)"
 
             # Convert received_date to datetime if it's a string
             if isinstance(received_date, str):
@@ -481,7 +484,7 @@ class IMAPWorker:
             We appreciate your patience and assure you that your concern is receiving our full attention.
 
             Warm regards,
-            MAS Callnet India Pvt. Ltd.
+            Molecular
             Customer Support Team
             """)
 

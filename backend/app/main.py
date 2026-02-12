@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse
 import os
 from .db import engine
 from .models import Base
-from .routers import auth, users, categories, templates, tickets, blocked_senders, emails, exports, instagram, bulk_emails_router, ticket_notes
+from .routers import auth, users, categories, templates, tickets, blocked_senders, emails, exports, instagram, bulk_emails_router, ticket_notes, feedback
 from .config import settings
 from .workers.bulk_email_worker import start_scheduler
 
@@ -57,6 +57,7 @@ app.include_router(exports.router, prefix="/exports", tags=["exports"])
 app.include_router(instagram.router, prefix="/instagram", tags=["instagram"])
 app.include_router(bulk_emails_router.router, prefix="/bulk-emails", tags=["Bulk Emails"])
 app.include_router(ticket_notes.router, prefix="/ticket-notes", tags=["Ticket Notes"])
+app.include_router(feedback.router, prefix="/feedback", tags=["Feedback"])
 
 @app.get("/")
 async def root():
