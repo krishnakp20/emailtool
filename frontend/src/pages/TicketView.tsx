@@ -54,6 +54,7 @@ const TicketView: React.FC = () => {
         setShowNoteModal(false)
         await fetchNotes()  // refresh notes/messages
         setSuccess("Note added successfully")
+        setError('')
         setTimeout(() => setSuccess(''), 3000)
       } catch (err:any){
         setError(err.response?.data?.detail || "Failed to save note")
@@ -142,6 +143,11 @@ const TicketView: React.FC = () => {
 //       setShowCloseReplyModal(true)
 //       return
 //     }
+
+    if (newStatus === 'Closed' && notes.length === 0) {
+        setError('Please add at least one internal note before closing this ticket.')
+        return
+    }
     
     // For Open/Pending, just update normally
     setIsUpdating(true)
@@ -481,7 +487,9 @@ const TicketView: React.FC = () => {
                 >
                   <option value="Open">Open</option>
                   <option value="Pending">Pending</option>
-                  <option value="Closed">Closed</option>
+                  <option value="Closed" disabled={notes.length === 0}>
+                      Closed {notes.length === 0 ? '(Note required)' : ''}
+                  </option>
                 </select>
               </div>
             </div>
