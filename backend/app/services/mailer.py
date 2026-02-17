@@ -60,7 +60,8 @@ def send_mail(
         body_part.attach(MIMEText("Please view this email in HTML format.", "plain", "utf-8"))
 
         # HTML content
-        body_part.attach(MIMEText(body, "html", "utf-8"))
+        html_body = body.replace("\n", "<br>")
+        body_part.attach(MIMEText(html_body, "html", "utf-8"))
 
         msg.attach(body_part)
 
