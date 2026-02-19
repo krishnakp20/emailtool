@@ -77,6 +77,62 @@ class TicketListResponse(BaseModel):
     page: int
     page_size: int
 
+
+from sqlalchemy import func, case
+
+@router.get("/adviser-stats")
+async def adviser_ticket_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get adviser wise ticket status counts"""
+
+    # Only admin allowed
+    if current_user.role != Role.admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized"
+        )
+
+    results = (
+        db.query(
+            User.id.label("adviser_id"),
+            User.name.label("adviser_name"),
+
+            func.count(
+                case((Ticket.status == TicketStatus.Open, 1))
+            ).label("open_count"),
+
+            func.count(
+                case((Ticket.status == TicketStatus.Pending, 1))
+            ).label("pending_count"),
+
+            func.count(
+                case((Ticket.status == TicketStatus.Closed, 1))
+            ).label("closed_count"),
+
+            func.count(Ticket.id).label("total_count")
+        )
+        .join(Ticket, Ticket.assigned_to == User.id)
+        .filter(User.role == Role.adviser)
+        .group_by(User.id, User.name)
+        .order_by(User.name)
+        .all()
+    )
+
+    return [
+        {
+            "adviser_id": r.adviser_id,
+            "adviser_name": r.adviser_name,
+            "open": r.open_count,
+            "pending": r.pending_count,
+            "closed": r.closed_count,
+            "total": r.total_count
+        }
+        for r in results
+    ]
+
+
 # Ticket listing with filters
 @router.get("/", response_model=TicketListResponse)
 async def list_tickets(

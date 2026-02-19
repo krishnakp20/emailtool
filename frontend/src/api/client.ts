@@ -162,6 +162,11 @@ export const ticketsAPI = {
     return response.data
   },
 
+  adviserStats: async () => {
+    const response = await apiClient.get('/tickets/adviser-stats')
+    return response.data
+  },
+
   get: async (id: number): Promise<Ticket> => {
     const response: AxiosResponse<Ticket> = await apiClient.get(`/tickets/${id}`)
     return response.data

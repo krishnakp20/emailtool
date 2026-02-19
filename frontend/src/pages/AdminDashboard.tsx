@@ -17,6 +17,8 @@ const AdminDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const [adviserStats, setAdviserStats] = useState<any[]>([])
+
   useEffect(() => {
     fetchDashboardData()
   }, [])
@@ -81,6 +83,11 @@ const AdminDashboard: React.FC = () => {
       })
 
       setRecentTickets(recentTicketsData.tickets)
+
+      const adviserStatsData = await ticketsAPI.adviserStats()
+
+      setAdviserStats(adviserStatsData)
+
     } catch (error: any) {
       console.error('❌ Failed to fetch dashboard data:', error)
       console.error('Error details:', {
@@ -225,6 +232,53 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <div className="bg-white rounded-lg shadow">
+          <div className="px-6 py-4 border-b">
+            <h3 className="text-lg font-medium">
+              Adviser Wise Ticket Status
+            </h3>
+          </div>
+
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left">Adviser</th>
+                <th className="px-6 py-3 text-left">Open</th>
+                <th className="px-6 py-3 text-left">Pending</th>
+                <th className="px-6 py-3 text-left">Closed</th>
+                <th className="px-6 py-3 text-left">Total</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {adviserStats.map((adv) => (
+                <tr key={adv.adviser_id}>
+                  <td className="px-6 py-4 font-medium">
+                    {adv.adviser_name}
+                  </td>
+
+                  <td className="px-6 py-4 text-green-600">
+                    {adv.open}
+                  </td>
+
+                  <td className="px-6 py-4 text-yellow-600">
+                    {adv.pending}
+                  </td>
+
+                  <td className="px-6 py-4 text-gray-600">
+                    {adv.closed}
+                  </td>
+
+                  <td className="px-6 py-4 font-semibold">
+                    {adv.total}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+      </div>
+
 
       {/* Recent Tickets */}
       <div className="bg-white rounded-lg shadow">
