@@ -18,12 +18,42 @@ const Inbox: React.FC = () => {
   const [reassigningTicketId, setReassigningTicketId] = useState<number | null>(null)
   const [showReassignDropdown, setShowReassignDropdown] = useState<number | null>(null)
 
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
+
+  const [pendingReminders, setPendingReminders] = useState(0)
+
   // Get filters from URL params
   const status = searchParams.get('status')
   const priorityId = searchParams.get('priority_id')
   const assignedTo = searchParams.get('assigned_to')
   const unassigned = searchParams.get('unassigned')
   const search = searchParams.get('search')
+
+  const createdFrom = searchParams.get('from_date')
+  const createdTo = searchParams.get('to_date')
+
+
+  useEffect(() => {
+    const fetchReminders = async () => {
+    try {
+      const res = await ticketsAPI.pendingReminders()
+      setPendingReminders(res.count)
+    } catch {}
+    }
+
+    fetchReminders()
+
+    const interval = setInterval(fetchReminders, 60000) // every 1 min
+
+    return () => clearInterval(interval)
+  }, [])
+
+
+  useEffect(() => {
+      if (createdFrom) setFromDate(createdFrom)
+      if (createdTo) setToDate(createdTo)
+  }, [createdFrom, createdTo])
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -38,6 +68,8 @@ const Inbox: React.FC = () => {
         if (assignedTo) params.assigned_to = parseInt(assignedTo)
         if (unassigned === 'true') params.unassigned = true
         if (search) params.search = search
+        if (createdFrom) params.from_date = createdFrom
+        if (createdTo) params.to_date = createdTo
         
         const response = await ticketsAPI.list(params)
         setTickets(response.tickets)
@@ -51,7 +83,7 @@ const Inbox: React.FC = () => {
     }
 
     fetchTickets()
-  }, [status, priorityId, assignedTo, unassigned, search, page, pageSize])
+  }, [status, priorityId, assignedTo, unassigned, search, page, pageSize, createdFrom, createdTo])
 
   useEffect(() => {
     if (currentUser?.role === 'admin') {
@@ -181,11 +213,73 @@ const Inbox: React.FC = () => {
       
       {/* Compact Header */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <h1 className="text-xl font-bold text-gray-900">
             {status ? `${status} Tickets` : unassigned === 'true' ? 'Unassigned' : 'All Tickets'}
             <span className="ml-2 text-sm font-normal text-gray-500">({total})</span>
           </h1>
+          <div className="flex flex-wrap items-end gap-2">
+
+              <div>
+                <label className="block text-xs text-gray-500">From</label>
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="border rounded px-2 py-1 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-500">To</label>
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="border rounded px-2 py-1 text-xs"
+                />
+              </div>
+
+              <button
+                onClick={() => {
+                  const params = new URLSearchParams(searchParams)
+
+                  if (fromDate) params.set('from_date', fromDate)
+                  else params.delete('from_date')
+
+                  if (toDate) params.set('to_date', toDate)
+                  else params.delete('to_date')
+
+                  setPage(1)
+                  navigate(`/inbox?${params.toString()}`)
+                }}
+                className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
+              >
+                Apply
+              </button>
+
+              <button
+                onClick={() => {
+                  setFromDate('')
+                  setToDate('')
+                  const params = new URLSearchParams(searchParams)
+                  params.delete('from_date')
+                  params.delete('to_date')
+                  navigate(`/inbox?${params.toString()}`)
+                }}
+                className="px-3 py-1 bg-gray-200 rounded text-xs hover:bg-gray-300"
+              >
+                Reset
+              </button>
+
+          </div>
+
+          {pendingReminders > 0 && (
+            <span className="px-3 py-1 text-xs font-semibold bg-red-100 text-red-700 rounded-full animate-pulse">
+              ⚠ {pendingReminders} Pending
+            </span>
+          )}
+
           {(status || priorityId || unassigned === 'true' || search) && (
             <div className="flex items-center gap-1.5">
               {status && <span className="px-2 py-0.5 rounded text-xs bg-blue-100 text-blue-700">Status: {status}</span>}

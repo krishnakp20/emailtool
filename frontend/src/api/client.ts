@@ -155,6 +155,8 @@ export const ticketsAPI = {
     assigned_to?: number
     unassigned?: boolean
     search?: string
+    from_date?: string
+    to_date?: string
     page?: number
     page_size?: number
   }): Promise<TicketListResponse> => {
@@ -162,8 +164,23 @@ export const ticketsAPI = {
     return response.data
   },
 
-  adviserStats: async () => {
-    const response = await apiClient.get('/tickets/adviser-stats')
+  adviserStats: async (params?: {
+      from_date?: string
+      to_date?: string
+  }) => {
+      const response = await apiClient.get('/tickets/adviser-stats', { params })
+      return response.data
+  },
+
+  pendingReminders: async (): Promise<{
+    count: number
+    tickets: {
+      id: number
+      subject: string
+      updated_at: string
+    }[]
+  }> => {
+    const response = await apiClient.get('/tickets/pending-reminders')
     return response.data
   },
 

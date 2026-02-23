@@ -19,6 +19,9 @@ const AdminDashboard: React.FC = () => {
 
   const [adviserStats, setAdviserStats] = useState<any[]>([])
 
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
+
   useEffect(() => {
     fetchDashboardData()
   }, [])
@@ -38,12 +41,18 @@ const AdminDashboard: React.FC = () => {
 
       // Fetch ticket counts by status
       console.log('📊 Fetching ticket counts...')
+
+      const dateFilters = {
+          ...(fromDate && { from_date: fromDate }),
+          ...(toDate && { to_date: toDate })
+      }
+
       const [allTickets, openTickets, pendingTickets, closedTickets, unassignedTickets] = await Promise.all([
-        ticketsAPI.list({ page_size: 1 }),
-        ticketsAPI.list({ status: 'Open', page_size: 1 }),
-        ticketsAPI.list({ status: 'Pending', page_size: 1 }),
-        ticketsAPI.list({ status: 'Closed', page_size: 1 }),
-        ticketsAPI.list({ unassigned: true, page_size: 1 })
+        ticketsAPI.list({ page_size: 1, ...dateFilters }),
+        ticketsAPI.list({ status: 'Open', page_size: 1, ...dateFilters }),
+        ticketsAPI.list({ status: 'Pending', page_size: 1, ...dateFilters }),
+        ticketsAPI.list({ status: 'Closed', page_size: 1, ...dateFilters }),
+        ticketsAPI.list({ unassigned: true, page_size: 1, ...dateFilters })
       ])
 
       console.log('✅ Ticket counts fetched:', {
@@ -68,7 +77,7 @@ const AdminDashboard: React.FC = () => {
 
       // Fetch recent tickets
       console.log('📋 Fetching recent tickets...')
-      const recentTicketsData = await ticketsAPI.list({ page_size: 10 })
+      const recentTicketsData = await ticketsAPI.list({ page_size: 10, ...dateFilters })
 
       console.log('✅ Recent tickets fetched:', recentTicketsData.tickets.length)
 
@@ -84,7 +93,7 @@ const AdminDashboard: React.FC = () => {
 
       setRecentTickets(recentTicketsData.tickets)
 
-      const adviserStatsData = await ticketsAPI.adviserStats()
+      const adviserStatsData = await ticketsAPI.adviserStats(dateFilters)
 
       setAdviserStats(adviserStatsData)
 
@@ -137,7 +146,55 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-3">
-      <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+
+          {/* LEFT SIDE TITLE */}
+          <h1 className="text-xl font-bold text-gray-900">
+            Admin Dashboard
+          </h1>
+
+          {/* RIGHT SIDE DATE FILTER */}
+          <div className="flex flex-wrap items-end gap-3">
+
+            <div>
+              <label className="block text-xs text-gray-500">From</label>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="border rounded px-3 py-2 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-500">To</label>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="border rounded px-3 py-2 text-sm"
+              />
+            </div>
+
+            <button
+              onClick={fetchDashboardData}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+            >
+              Apply
+            </button>
+
+            <button
+              onClick={() => {
+                setFromDate('')
+                setToDate('')
+              }}
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 text-sm"
+            >
+              Reset
+            </button>
+
+          </div>
+      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">

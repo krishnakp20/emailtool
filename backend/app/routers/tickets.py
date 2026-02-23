@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, File, Uplo
 from sqlalchemy.orm import Session, joinedload
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import logging
 from ..db import get_db
@@ -78,10 +78,59 @@ class TicketListResponse(BaseModel):
     page_size: int
 
 
+
+def get_overdue_pending_tickets(db: Session):
+    cutoff_time = datetime.utcnow() - timedelta(hours=48)
+
+    return (
+        db.query(Ticket)
+        .filter(
+            and_(
+                Ticket.status == TicketStatus.Pending,
+                Ticket.updated_at <= cutoff_time
+            )
+        )
+        .all()
+    )
+
+
+@router.get("/pending-reminders")
+async def pending_ticket_reminders(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    cutoff_time = datetime.utcnow() - timedelta(hours=48)
+
+    query = db.query(Ticket).filter(
+        Ticket.status == TicketStatus.Pending,
+        Ticket.updated_at <= cutoff_time
+    )
+
+    # advisers only see their tickets
+    if current_user.role == Role.adviser:
+        query = query.filter(Ticket.assigned_to == current_user.id)
+
+    tickets = query.all()
+
+    return {
+        "count": len(tickets),
+        "tickets": [
+            {
+                "id": t.id,
+                "subject": t.subject,
+                "updated_at": t.updated_at
+            }
+            for t in tickets
+        ]
+    }
+
+
 from sqlalchemy import func, case
 
 @router.get("/adviser-stats")
 async def adviser_ticket_stats(
+    from_date: Optional[str] = Query(None),
+    to_date: Optional[str] = Query(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -94,27 +143,31 @@ async def adviser_ticket_stats(
             detail="Not authorized"
         )
 
-    results = (
+    query = (
         db.query(
             User.id.label("adviser_id"),
             User.name.label("adviser_name"),
 
-            func.count(
-                case((Ticket.status == TicketStatus.Open, 1))
-            ).label("open_count"),
-
-            func.count(
-                case((Ticket.status == TicketStatus.Pending, 1))
-            ).label("pending_count"),
-
-            func.count(
-                case((Ticket.status == TicketStatus.Closed, 1))
-            ).label("closed_count"),
-
+            func.count(case((Ticket.status == TicketStatus.Open, 1))).label("open_count"),
+            func.count(case((Ticket.status == TicketStatus.Pending, 1))).label("pending_count"),
+            func.count(case((Ticket.status == TicketStatus.Closed, 1))).label("closed_count"),
             func.count(Ticket.id).label("total_count")
         )
         .join(Ticket, Ticket.assigned_to == User.id)
         .filter(User.role == Role.adviser)
+    )
+
+    if from_date:
+        from_dt = datetime.strptime(from_date, "%Y-%m-%d")
+        query = query.filter(Ticket.created_at >= from_dt)
+
+    if to_date:
+        # include full day
+        to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
+        query = query.filter(Ticket.created_at < to_dt)
+
+    results = (
+        query
         .group_by(User.id, User.name)
         .order_by(User.name)
         .all()
@@ -141,6 +194,8 @@ async def list_tickets(
     assigned_to: Optional[int] = Query(None),
     unassigned: Optional[bool] = Query(None),
     search: Optional[str] = Query(None),
+    from_date: Optional[str] = Query(None),
+    to_date: Optional[str] = Query(None),
     page: Optional[int] = Query(1),
     page_size: Optional[int] = Query(25),
     db: Session = Depends(get_db),
@@ -196,6 +251,15 @@ async def list_tickets(
                 TicketMessage.body.ilike(search_filter)
             )
         ).distinct()
+
+    if from_date:
+        from_dt = datetime.strptime(from_date, "%Y-%m-%d")
+        query = query.filter(Ticket.created_at >= from_dt)
+
+    if to_date:
+        # include full day
+        to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
+        query = query.filter(Ticket.created_at < to_dt)
 
     # Advisers can only see their assigned tickets (unless admin)
     if current_user.role == Role.adviser and not search:
@@ -658,4 +722,4 @@ async def reassign_ticket(
     db.commit()
     db.refresh(ticket)
     
-    return {"message": "Ticket reassigned successfully"} 
+    return {"message": "Ticket reassigned successfully"}

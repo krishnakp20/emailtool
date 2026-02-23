@@ -12,6 +12,8 @@ const AdminBulkReassign: React.FC = () => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  const [pageSize, setPageSize] = useState(10)
+
   useEffect(() => {
     fetchAdvisers()
   }, [])
@@ -23,7 +25,7 @@ const AdminBulkReassign: React.FC = () => {
       setTickets([])
       setSelectedTickets(new Set())
     }
-  }, [sourceAgentId])
+  }, [sourceAgentId, pageSize])
 
   const fetchAdvisers = async () => {
     try {
@@ -43,7 +45,7 @@ const AdminBulkReassign: React.FC = () => {
       const response = await ticketsAPI.list({
         assigned_to: sourceAgentId,
         status: 'Open',
-        page_size: 1000
+        page_size: pageSize
       })
       setTickets(response.tickets)
     } catch (err: any) {
@@ -232,6 +234,25 @@ const AdminBulkReassign: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900">
               Step 2: Select Tickets to Transfer
             </h2>
+
+            <div className="flex items-center gap-2 text-sm">
+                <span className="text-gray-600">Show</span>
+
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(parseInt(e.target.value))
+                    setSelectedTickets(new Set())
+                  }}
+                  className="border rounded px-2 py-1 text-sm"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+
+                <span className="text-gray-600">tickets</span>
+            </div>
             {tickets.length > 0 && (
               <div className="text-sm text-gray-600">
                 {selectedTickets.size} of {tickets.length} selected

@@ -135,6 +135,13 @@ const TicketView: React.FC = () => {
     }
   }
 
+  const outboundCount = messages.filter(
+      m => m.direction === 'outbound'
+    ).length
+
+  const hasAgentReply = outboundCount > 1
+  const canCloseTicket = notes.length > 0 || hasAgentReply
+
   const handleStatusChange = async (newStatus: string) => {
     if (!ticket) return
     
@@ -144,9 +151,9 @@ const TicketView: React.FC = () => {
 //       return
 //     }
 
-    if (newStatus === 'Closed' && notes.length === 0) {
-        setError('Please add at least one internal note before closing this ticket.')
-        return
+    if (newStatus === 'Closed' && !canCloseTicket) {
+      setError('You must add an internal note or send a reply before closing this ticket.')
+      return
     }
     
     // For Open/Pending, just update normally
@@ -487,22 +494,25 @@ const TicketView: React.FC = () => {
                 >
                   <option value="Open">Open</option>
                   <option value="Pending">Pending</option>
-                  <option value="Closed" disabled={notes.length === 0}>
-                      Closed {notes.length === 0 ? '(Note required)' : ''}
+                  <option value="Closed" disabled={!canCloseTicket}>
+                      Closed {!canCloseTicket ? '(Note or Reply required)' : ''}
                   </option>
                 </select>
               </div>
             </div>
             
             {/* Warning: Reply required before closing */}
-            {ticket.status !== 'Closed' && messages.filter(m => m.direction === 'outbound').length === 0 && (
+            {ticket.status !== 'Closed' && !canCloseTicket && (
               <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded p-2">
                 <div className="flex items-start">
                   <svg className="w-4 h-4 text-yellow-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-1.964-1.333-2.732 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
+
                   <p className="text-xs text-yellow-800">
-                    <strong>Important:</strong> When closing this ticket, you must send a closing email to the customer. Select "Closed" to send the closing email.
+                    <strong>Closing rule:</strong> Add an internal note or send at least one
+                    reply to the customer before closing this ticket.
                   </p>
                 </div>
               </div>
