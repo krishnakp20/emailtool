@@ -9,6 +9,8 @@ const AdminExports: React.FC = () => {
   const [isExporting, setIsExporting] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
 
   // Ticket export filters
   const [ticketFilters, setTicketFilters] = useState({
@@ -207,6 +209,45 @@ const AdminExports: React.FC = () => {
       setIsExporting(null)
     }
   }
+
+  const handleExportTicketFeedback = async () => {
+      setIsExporting('feedback')
+      setError('')
+      setSuccess('')
+
+      try {
+        let url = `${API_BASE_URL}/exports/ticket-feedback/excel?`
+
+        if (fromDate) url += `from_date=${fromDate}&`
+        if (toDate) url += `to_date=${toDate}&`
+
+        const response = await fetch(url, {
+          headers: getAuthHeaders()
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to export ticket feedback')
+        }
+
+        const blob = await response.blob()
+        const downloadUrl = window.URL.createObjectURL(blob)
+
+        const link = document.createElement('a')
+        link.href = downloadUrl
+        link.download = `ticket_feedback_${new Date().getTime()}.xlsx`
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        window.URL.revokeObjectURL(downloadUrl)
+
+        setSuccess('Ticket feedback exported successfully!')
+      } catch (err: any) {
+        setError(err.message || 'Failed to export ticket feedback')
+      } finally {
+        setIsExporting(null)
+      }
+  }
+
 
   return (
     <div className="space-y-6">
@@ -447,6 +488,108 @@ const AdminExports: React.FC = () => {
             )}
           </button>
         </div>
+      </div>
+
+      <div className="bg-white shadow rounded-lg p-6">
+          <div className="flex items-center mb-4">
+            {/* Purple Feedback Icon */}
+            <svg
+              className="w-6 h-6 text-purple-600 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8h2a2 2 0 012 2v7a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h2"
+              />
+            </svg>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Export Ticket Feedback
+            </h2>
+          </div>
+
+          <p className="text-sm text-gray-600 mb-4">
+            Export ticket feedback data with customer email and ratings.
+          </p>
+
+          {/* Date Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="md:col-span-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                From Date
+              </label>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+              />
+            </div>
+
+            <div className="md:col-span-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                To Date
+              </label>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Export Button */}
+          <button
+            onClick={handleExportTicketFeedback}
+            disabled={isExporting === 'feedback'}
+            className="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+          >
+            {isExporting === 'feedback' ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                Exporting...
+              </>
+            ) : (
+              <>
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Export Feedback
+              </>
+            )}
+          </button>
       </div>
 
       {/* Export Blocked Senders */}

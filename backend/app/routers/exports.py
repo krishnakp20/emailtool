@@ -2,12 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session, joinedload
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 import io
 from ..db import get_db
 from ..deps import require_admin
-from ..models import Ticket, TicketMessage, User, BlockedSender, MsgDir
+from ..models import Ticket, TicketMessage, User, BlockedSender, MsgDir, TicketFeedback
+from io import BytesIO
+from openpyxl import Workbook
 
 router = APIRouter()
 
@@ -238,3 +240,67 @@ async def export_blocked_senders_csv(
     )
 
 
+
+@router.get("/ticket-feedback/excel")
+def export_ticket_feedback_excel(
+    from_date: str = Query(None),
+    to_date: str = Query(None),
+    db: Session = Depends(get_db)
+):
+    query = (
+        db.query(TicketFeedback, Ticket)
+        .join(Ticket, TicketFeedback.ticket_id == Ticket.id)
+    )
+
+    # ✅ Date filtering
+    if from_date:
+        from_dt = datetime.strptime(from_date, "%Y-%m-%d")
+        query = query.filter(TicketFeedback.created_at >= from_dt)
+
+    if to_date:
+        to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
+        query = query.filter(TicketFeedback.created_at <= to_dt)
+
+    results = query.all()
+
+    # ✅ Create Excel file
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Ticket Feedback"
+
+    # Headers
+    headers = [
+        "Ticket ID",
+        "Customer Email",
+        "Support Rating",
+        "Delivery Rating",
+        "Product Rating",
+        "Submitted At",
+        "Created At",
+    ]
+    ws.append(headers)
+
+    # Data rows
+    for feedback, ticket in results:
+        ws.append([
+            feedback.ticket_id,
+            ticket.customer_email,
+            feedback.support_rating,
+            feedback.delivery_rating,
+            feedback.product_rating,
+            feedback.submitted_at,
+            feedback.created_at,
+        ])
+
+    # Save to memory
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    filename = f"ticket_feedback_{datetime.now().strftime('%Y%m%d%H%M%S')}.xlsx"
+
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )

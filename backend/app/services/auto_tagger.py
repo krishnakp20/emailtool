@@ -23,14 +23,63 @@ class AutoTagger:
     def detect_voc(self, text: str):
         """Detect VOC category based on complaint or request type"""
         text_lower = text.lower()
-        if "refund" in text_lower or "money" in text_lower:
-            return self.db.query(CategoryVOC).filter_by(name="Refund Request").first()
-        elif "delay" in text_lower or "late" in text_lower:
-            return self.db.query(CategoryVOC).filter_by(name="Delivery Issue").first()
-        elif "broken" in text_lower or "damaged" in text_lower:
-            return self.db.query(CategoryVOC).filter_by(name="Product Damage").first()
-        else:
-            return self.db.query(CategoryVOC).filter_by(name="General Inquiry").first()
+
+        voc_rules = [
+            (["order marked", "marked delivered"], "Order Marked"),
+            (["refund", "money back", "return", "reimbursement",
+             "claim", "request return", "compensation",
+             "repay", "credit", "replacement"], "Refund Request"),
+            (["payment", "refund payment", "transaction failed", "declined",
+             "charge", "billing", "payment issue", "double charge",
+             "failed payment", "payment declined", "unauthorized charge",
+             "transaction error"], "Payment Related"),
+            (["damaged", "broken", "missing", "wrong item", "defective",
+             "incomplete", "packaging issue", "incorrect product",
+             "faulty", "smashed", "lost item", "mis shipped"], "Product issues (damaged, missing, wrong items)"),
+            (["cancel", "cancellation", "stop order", "wrong order",
+             "remove order", "abort", "terminate", "undo", "revoke"], "Order Cancellation"),
+            (["no reply", "promotional", "advertisement",
+             "unsolicited", "junk", "phishing", "scam",
+             "marketing email", "irrelevant"], "Spam"),
+            (["product question", "availability", "pre purchase", "specifications",
+             "info request", "before buying", "inquiry", "stock check",
+             "product details", "feature query", "pricing question",
+             "compatibility"], "Pre-purchase inquiries"),
+            (["change", "modify", "update", "edit delivery", "adjust", "swap",
+             "replace", "customize", "amend", "correct"], "Modification requests"),
+            (["on-time", "expected", "arriving", "within 7 days",
+             "estimated delivery", "tracking", "upcoming delivery",
+             "scheduled", "prompt", "timely"], "Order Status- Within(7 days)"),
+            (["delayed", "late", "not received", "pending", "waiting",
+             "overdue", "shipping delay", "behind schedule",
+             "eta missed", "delivery issue"], "Order Status - Delay(7days)"),
+            (["rto rejected", "return rejected"], "RTO- Rejected"),
+            (["reship", "reshipped"], "RTO- Reshipped"),
+            (["fake", "counterfeit", "expired", "not genuine", "authenticity", "imitation",
+             "copy", "old stock", "quality issue", "knockoff", "bogus", "phony",
+             "substandard", "fraudulent", "replica"], "Fake or Expired products"),
+            (["proof of delivery", "pod", "delivered but haven't received",
+             "signed", "delivery confirmation", "acknowledgment", "receipt",
+             "shipment proof", "verification"], "POD related"),
+            (["skin issue", "allergy", "irritation", "redness",
+             "acne", "sensitive skin", "dermatology",
+             "reaction", "rash", "eczema", "breakout",
+             "inflammation", "hives"], "Skin Related"),
+            (["nch", "consumer complaint"], "NCH"),
+            (["complaint", "bad review", "dissatisfied", "unhappy", "negative feedback",
+             "poor experience", "issue", "criticism", "terrible", "awful",
+             "disappointing", "frustration", "hate"], "Negative Comment"),
+            (["shipment stuck", "edd breach", "not moving"], "Stuck Shipment – EDD Breach"),
+            (["glitch order", "system error order"], "Glitch Order"),
+            (["need more info", "waiting for reply", "incomplete info"],
+             "Information Incomplete - Waiting For Customer Reply"),
+        ]
+
+        for keywords, category_name in voc_rules:
+            if any(word in text_lower for word in keywords):
+                return self.db.query(CategoryVOC).filter_by(name=category_name).first()
+
+        return self.db.query(CategoryVOC).filter_by(name="Any Other").first()
 
     def detect_priority(self, text: str):
         """Detect priority from message urgency"""

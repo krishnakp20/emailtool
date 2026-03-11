@@ -17,6 +17,7 @@ class UserCreate(BaseModel):
     role: str
     password: str
     is_active: bool = True
+    is_online: Optional[bool] = None
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
@@ -25,6 +26,7 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     password: Optional[str] = None
     is_active: Optional[bool] = None
+    is_online: Optional[bool] = None
 
 class UserResponse(BaseModel):
     id: int
@@ -33,6 +35,7 @@ class UserResponse(BaseModel):
     emp_code: Optional[str] = None
     role: Role
     is_active: bool
+    is_online: Optional[bool] = None
     created_at: datetime
 
     class Config:
@@ -77,7 +80,8 @@ async def create_user(
         emp_code=user_data.emp_code,
         role=role_enum,
         password_hash=hash_password(user_data.password),
-        is_active=user_data.is_active
+        is_active=user_data.is_active,
+        is_online=user_data.is_online if user_data.is_online is not None else False
     )
     
     db.add(user)
@@ -225,6 +229,9 @@ async def update_user(
     
     if user_data.is_active is not None:
         user.is_active = user_data.is_active
+
+    if user_data.is_online is not None:
+        user.is_online = user_data.is_online
     
     db.commit()
     db.refresh(user)

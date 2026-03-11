@@ -56,6 +56,7 @@ export interface User {
   emp_code?: string
   role: 'admin' | 'adviser'
   is_active: boolean
+  is_online?: boolean
   created_at: string
 }
 
@@ -250,7 +251,7 @@ export const usersAPI = {
     return response.data
   },
 
-  create: async (data: { name: string; email: string; emp_code?: string; role: string; password: string; is_active?: boolean }): Promise<User> => {
+  create: async (data: { name: string; email: string; emp_code?: string; role: string; password: string; is_active?: boolean; is_online?: boolean }): Promise<User> => {
     const response: AxiosResponse<User> = await apiClient.post('/users', data)
     return response.data
   },

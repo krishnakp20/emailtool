@@ -15,7 +15,8 @@ const AdminUsers: React.FC = () => {
     emp_code: '',
     role: 'adviser' as 'admin' | 'adviser',
     password: '',
-    is_active: true
+    is_active: true,
+    is_online: false
   })
 
   useEffect(() => {
@@ -78,7 +79,8 @@ const AdminUsers: React.FC = () => {
       emp_code: '',
       role: 'adviser',
       password: '',
-      is_active: true
+      is_active: true,
+      is_online: false
     })
   }
 
@@ -90,7 +92,8 @@ const AdminUsers: React.FC = () => {
       emp_code: user.emp_code || '',
       role: user.role,
       password: '',
-      is_active: user.is_active
+      is_active: user.is_active,
+      is_online: user.is_online ?? false
     })
   }
 
@@ -211,7 +214,22 @@ const AdminUsers: React.FC = () => {
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="is_active" className="ml-2 text-sm text-gray-700">
-                Active (eligible for ticket assignment)
+                Active
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="is_online"
+                checked={formData.is_online}
+                onChange={(e) =>
+                  setFormData({ ...formData, is_online: e.target.checked })
+                }
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="is_online" className="ml-2 text-sm text-gray-700">
+                Online (eligible for ticket assignment)
               </label>
             </div>
             
@@ -250,6 +268,9 @@ const AdminUsers: React.FC = () => {
                 Status
               </th>
               <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
+                  Online
+              </th>
+              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
                 Created
               </th>
               <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
@@ -284,6 +305,22 @@ const AdminUsers: React.FC = () => {
                   }`}>
                     {user.is_active ? 'Active' : 'Inactive'}
                   </span>
+                </td>
+
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {user.is_online === undefined ? (
+                    <span className="px-2 py-0.5 text-xs rounded bg-gray-100 text-gray-600">
+                      -
+                    </span>
+                  ) : (
+                    <span className={`px-2 py-0.5 text-xs rounded ${
+                      user.is_online
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-200 text-gray-700'
+                    }`}>
+                      {user.is_online ? 'Online' : 'Offline'}
+                    </span>
+                  )}
                 </td>
                 
                 <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-500">

@@ -33,6 +33,7 @@ class User(Base):
     emp_code = Column(String(100), unique=True, index=True, nullable=True)
     role = Column(Enum(Role), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
+    is_online = Column(Boolean, default=False, nullable=False)
     password_hash = Column(String(255), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

@@ -10,7 +10,8 @@ def next_adviser_id(db: Session) -> Optional[int]:
     # Get all active advisers ordered by ID
     active_advisers = db.query(User).filter(
         User.role == Role.adviser,
-        User.is_active == True
+        User.is_active == True,
+        User.is_online == True
     ).order_by(User.id).all()
     
     if not active_advisers:

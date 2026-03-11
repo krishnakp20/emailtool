@@ -10,7 +10,8 @@ const Inbox: React.FC = () => {
   const { currentUser } = useAuth()
   const [tickets, setTickets] = useState<Ticket[]>([])
   const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
+  const pageParam = searchParams.get('page')
+  const [page, setPage] = useState(pageParam ? parseInt(pageParam) : 1)
   const [pageSize] = useState(25)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -32,6 +33,13 @@ const Inbox: React.FC = () => {
 
   const createdFrom = searchParams.get('from_date')
   const createdTo = searchParams.get('to_date')
+
+
+  useEffect(() => {
+      if (pageParam) {
+        setPage(parseInt(pageParam))
+      }
+  }, [pageParam])
 
 
   useEffect(() => {
@@ -138,8 +146,10 @@ const Inbox: React.FC = () => {
   const totalPages = Math.ceil(total / pageSize)
 
   const handlePageChange = (newPage: number) => {
-    setPage(newPage)
-    window.scrollTo(0, 0)
+      const params = new URLSearchParams(searchParams)
+      params.set('page', String(newPage))
+
+      navigate(`/inbox?${params.toString()}`)
   }
 
   if (isLoading) {
