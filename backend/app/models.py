@@ -220,6 +220,21 @@ class TicketFeedback(Base):
     ticket = relationship("Ticket", back_populates="feedback")
 
 
+class TicketEvent(Base):
+    __tablename__ = "ticket_events"
+
+    id = Column(BigInteger, primary_key=True)
+    ticket_id = Column(BigInteger, ForeignKey("tickets.id"), nullable=False)
+
+    event_type = Column(String(50), nullable=False, default="status_change")
+    old_value = Column(String(50), nullable=True)
+    new_value = Column(String(50), nullable=True)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    ticket = relationship("Ticket")
+
+
 # Indexes for performance
 Index('idx_tickets_status_assigned_priority_updated', 'status', 'assigned_to', 'priority_id', 'updated_at')
 Index('idx_ticket_messages_ticket_id', 'ticket_id')

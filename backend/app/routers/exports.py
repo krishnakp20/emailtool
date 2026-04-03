@@ -7,7 +7,7 @@ import csv
 import io
 from ..db import get_db
 from ..deps import require_admin
-from ..models import Ticket, TicketMessage, User, BlockedSender, MsgDir, TicketFeedback
+from ..models import Ticket, TicketMessage, User, BlockedSender, MsgDir, TicketFeedback, TicketEvent
 from io import BytesIO
 from openpyxl import Workbook
 
@@ -302,5 +302,80 @@ def export_ticket_feedback_excel(
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+
+@router.get("/ticket-events/csv")
+async def export_ticket_events_csv(
+    ticket_id: Optional[int] = Query(None),
+    from_date: Optional[str] = Query(None),
+    to_date: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
+):
+    """Export ticket events (status changes) to CSV"""
+
+    query = db.query(TicketEvent).options(
+        joinedload(TicketEvent.ticket)
+    )
+
+    # Filters
+    if ticket_id:
+        query = query.filter(TicketEvent.ticket_id == ticket_id)
+
+    if from_date:
+        query = query.filter(TicketEvent.created_at >= from_date)
+
+    if to_date:
+        query = query.filter(TicketEvent.created_at <= to_date)
+
+    query = query.order_by(TicketEvent.created_at.desc())
+
+    events = query.all()
+
+    # CSV
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header
+    writer.writerow([
+        'Event ID',
+        'Ticket ID',
+        'Customer Email',
+        'Subject',
+        'Assigned To',
+        'Old Status',
+        'New Status',
+        'Event Type',
+        'Created At'
+    ])
+
+    # Data
+    for event in events:
+        ticket = event.ticket
+
+        writer.writerow([
+            event.id,
+            event.ticket_id,
+            ticket.customer_email if ticket else '',
+            ticket.subject if ticket else '',
+            ticket.assigned_user.name if ticket and ticket.assigned_user else '',
+            event.old_value,
+            event.new_value,
+            event.event_type,
+            event.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        ])
+
+    output.seek(0)
+
+    # Filename
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"ticket_events_export_{timestamp}.csv"
+
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )

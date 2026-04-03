@@ -10,7 +10,7 @@ from ..db import get_db
 from ..deps import get_current_user, require_admin, require_role
 from ..models import (
     Ticket, TicketMessage, User, Role, TicketStatus, MsgDir,
-    CategoryLanguage, CategoryVOC, CategoryPriority, EmailTemplate
+    CategoryLanguage, CategoryVOC, CategoryPriority, EmailTemplate, TicketEvent
 )
 from ..services.mailer import send_mail
 from ..utils import get_pagination_params, apply_pagination
@@ -671,13 +671,23 @@ async def reply_to_ticket(
     )
     
     db.add(outbound_message)
-    
-    # Reopen ticket if it was closed and has previous reply
-    if should_reopen:
-        ticket.status = TicketStatus.Open
 
     # Close ticket if explicitly requested via close_after flag
     was_closed = ticket.status == TicketStatus.Closed
+
+    # Reopen ticket if it was closed and has previous reply
+    if should_reopen:
+        old_status = ticket.status
+
+        ticket.status = TicketStatus.Open
+
+        db.add(TicketEvent(
+            ticket_id=ticket.id,
+            event_type="status_change",
+            old_value=old_status.value,
+            new_value=TicketStatus.Open.value
+        ))
+
 
     if reply_data.close_after:
         ticket.status = TicketStatus.Closed

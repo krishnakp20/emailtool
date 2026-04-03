@@ -28,6 +28,11 @@ const AdminExports: React.FC = () => {
     to_date: ''
   })
 
+  const [eventFilters, setEventFilters] = useState({
+      from_date: '',
+      to_date: ''
+  })
+
   useEffect(() => {
     fetchAdvisers()
     fetchPriorities()
@@ -249,6 +254,47 @@ const AdminExports: React.FC = () => {
   }
 
 
+  const handleExportTicketEvents = async () => {
+      setIsExporting('events')
+      setError('')
+      setSuccess('')
+
+      try {
+        const params = new URLSearchParams()
+
+        if (eventFilters.from_date) params.append('from_date', eventFilters.from_date)
+        if (eventFilters.to_date) params.append('to_date', eventFilters.to_date)
+
+        const url = `${API_BASE_URL}/exports/ticket-events/csv?${params.toString()}`
+
+        const response = await fetch(url, {
+          headers: getAuthHeaders()
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to export ticket events')
+        }
+
+        const blob = await response.blob()
+        const downloadUrl = window.URL.createObjectURL(blob)
+
+        const link = document.createElement('a')
+        link.href = downloadUrl
+        link.download = `ticket_events_${new Date().getTime()}.csv`
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        window.URL.revokeObjectURL(downloadUrl)
+
+        setSuccess('Ticket events exported successfully!')
+      } catch (err: any) {
+        setError(err.message || 'Failed to export ticket events')
+      } finally {
+        setIsExporting(null)
+      }
+  }
+
+
   return (
     <div className="space-y-6">
       <div className="bg-white shadow rounded-lg p-6">
@@ -391,6 +437,72 @@ const AdminExports: React.FC = () => {
             </>
           )}
         </button>
+      </div>
+
+      {/* Export Ticket Events */}
+      <div className="bg-white shadow rounded-lg p-6">
+          <div className="flex items-center mb-4">
+            <svg className="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-6h13M9 5h13M5 12h.01M5 6h.01M5 18h.01" />
+            </svg>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Export Ticket Events
+            </h2>
+          </div>
+
+          <p className="text-sm text-gray-600 mb-4">
+            Export ticket status change history including assigned agent.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                From Date
+              </label>
+              <input
+                type="date"
+                value={eventFilters.from_date}
+                onChange={(e) => setEventFilters({...eventFilters, from_date: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                To Date
+              </label>
+              <input
+                type="date"
+                value={eventFilters.to_date}
+                onChange={(e) => setEventFilters({...eventFilters, to_date: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+              />
+            </div>
+
+          </div>
+
+          <button
+            onClick={handleExportTicketEvents}
+            disabled={isExporting === 'events'}
+            className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center"
+          >
+            {isExporting === 'events' ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                </svg>
+                Exporting...
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Export Ticket Events
+              </>
+            )}
+          </button>
       </div>
 
       {/* Export Emails */}

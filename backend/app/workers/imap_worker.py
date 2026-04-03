@@ -19,7 +19,7 @@ from app.config import settings
 from app.db import SessionLocal
 from app.models import (
     EmailIngest, Ticket, TicketMessage, BlockedSender,
-    MsgDir, TicketStatus
+    MsgDir, TicketStatus, TicketEvent
 )
 from app.services.assignment import next_adviser_id
 from app.services.mailer import send_mail
@@ -320,8 +320,18 @@ class IMAPWorker:
 
                     # Reopen if closed
                     if existing_ticket.status == TicketStatus.Closed:
+                        old_status = existing_ticket.status
+
                         existing_ticket.status = TicketStatus.Open
-                        logger.info(f"Reopened closed ticket {existing_ticket.id}")
+
+                        self.db.add(TicketEvent(
+                            ticket_id=existing_ticket.id,
+                            event_type="status_change",
+                            old_value=old_status.value,
+                            new_value=TicketStatus.Open.value
+                        ))
+
+                        logger.info(f"Reopened ticket {existing_ticket.id}")
 
                     existing_ticket.updated_at = datetime.utcnow()
 
@@ -414,8 +424,18 @@ class IMAPWorker:
 
                 # Reopen if closed
                 if existing_ticket.status == TicketStatus.Closed:
+                    old_status = existing_ticket.status
+
                     existing_ticket.status = TicketStatus.Open
-                    logger.info(f"Reopened closed ticket {existing_ticket.id}")
+
+                    self.db.add(TicketEvent(
+                        ticket_id=existing_ticket.id,
+                        event_type="status_change",
+                        old_value=old_status.value,
+                        new_value=TicketStatus.Open.value
+                    ))
+
+                    logger.info(f"Reopened ticket {existing_ticket.id}")
 
                 existing_ticket.updated_at = datetime.utcnow()
 
