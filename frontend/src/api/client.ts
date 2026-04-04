@@ -158,6 +158,8 @@ export const ticketsAPI = {
     search?: string
     from_date?: string
     to_date?: string
+    sort_by?: string
+    sort_order?: 'asc' | 'desc'
     page?: number
     page_size?: number
   }): Promise<TicketListResponse> => {

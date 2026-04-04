@@ -34,6 +34,9 @@ const Inbox: React.FC = () => {
   const createdFrom = searchParams.get('from_date')
   const createdTo = searchParams.get('to_date')
 
+  const sortBy = searchParams.get('sort_by')
+  const sortOrder = searchParams.get('sort_order')
+
 
   useEffect(() => {
       if (pageParam) {
@@ -78,6 +81,8 @@ const Inbox: React.FC = () => {
         if (search) params.search = search
         if (createdFrom) params.from_date = createdFrom
         if (createdTo) params.to_date = createdTo
+        if (sortBy) params.sort_by = sortBy
+        if (sortOrder) params.sort_order = sortOrder
         
         const response = await ticketsAPI.list(params)
         setTickets(response.tickets)
@@ -91,7 +96,7 @@ const Inbox: React.FC = () => {
     }
 
     fetchTickets()
-  }, [status, priorityId, assignedTo, unassigned, search, page, pageSize, createdFrom, createdTo])
+  }, [status, priorityId, assignedTo, unassigned, search, page, pageSize, createdFrom, createdTo, sortBy, sortOrder])
 
   useEffect(() => {
     if (currentUser?.role === 'admin') {
@@ -205,6 +210,25 @@ const Inbox: React.FC = () => {
         <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" />
       </svg>
     )
+  }
+
+
+  const handleSort = (field: string) => {
+      const params = new URLSearchParams(searchParams)
+
+      const currentSortBy = params.get('sort_by')
+      const currentOrder = params.get('sort_order')
+
+      if (currentSortBy === field) {
+        // toggle
+        params.set('sort_order', currentOrder === 'asc' ? 'desc' : 'asc')
+      } else {
+        params.set('sort_by', field)
+        params.set('sort_order', 'desc')
+      }
+
+      params.set('page', '1') // reset page
+      navigate(`/inbox?${params.toString()}`)
   }
 
   return (
@@ -323,11 +347,17 @@ const Inbox: React.FC = () => {
                   <th scope="col" className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
                     Assigned
                   </th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                    Created
+                  <th
+                      onClick={() => handleSort('created_at')}
+                      className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer select-none"
+                  >
+                      Created {sortBy === 'created_at' && (sortOrder === 'asc' ? '↑' : '↓')}
                   </th>
-                  <th scope="col" className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                    Updated
+                  <th
+                      onClick={() => handleSort('updated_at')}
+                      className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer select-none"
+                  >
+                      Updated {sortBy === 'updated_at' && (sortOrder === 'asc' ? '↑' : '↓')}
                   </th>
                   <th scope="col" className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
                     Action

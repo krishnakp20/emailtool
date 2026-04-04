@@ -159,12 +159,12 @@ async def adviser_ticket_stats(
 
     if from_date:
         from_dt = datetime.strptime(from_date, "%Y-%m-%d")
-        query = query.filter(Ticket.created_at >= from_dt)
+        query = query.filter(Ticket.updated_at >= from_dt)
 
     if to_date:
         # include full day
         to_dt = datetime.strptime(to_date, "%Y-%m-%d") + timedelta(days=1)
-        query = query.filter(Ticket.created_at < to_dt)
+        query = query.filter(Ticket.updated_at < to_dt)
 
     results = (
         query
@@ -196,6 +196,8 @@ async def list_tickets(
     search: Optional[str] = Query(None),
     from_date: Optional[str] = Query(None),
     to_date: Optional[str] = Query(None),
+    sort_by: Optional[str] = Query(None),
+    sort_order: Optional[str] = Query(None),
     page: Optional[int] = Query(1),
     page_size: Optional[int] = Query(25),
     db: Session = Depends(get_db),
@@ -273,7 +275,20 @@ async def list_tickets(
         )
     
     # Order by updated_at desc (must be before pagination)
-    query = query.order_by(Ticket.updated_at.desc())
+    if sort_by:
+        if sort_by == "created_at":
+            column = Ticket.created_at
+        elif sort_by == "updated_at":
+            column = Ticket.updated_at
+        else:
+            column = Ticket.updated_at
+
+        if sort_order == "asc":
+            query = query.order_by(column.asc())
+        else:
+            query = query.order_by(column.desc())
+    else:
+        query = query.order_by(Ticket.updated_at.desc())
     
     # Get total count
     total = query.count()

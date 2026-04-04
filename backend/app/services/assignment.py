@@ -1,6 +1,14 @@
 from sqlalchemy.orm import Session
 from ..models import User, AssignmentCursor, Role
 from typing import Optional
+import logging
+from ..db import SessionLocal
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 def next_adviser_id(db: Session) -> Optional[int]:
     """
@@ -10,9 +18,14 @@ def next_adviser_id(db: Session) -> Optional[int]:
     # Get all active advisers ordered by ID
     active_advisers = db.query(User).filter(
         User.role == Role.adviser,
-        User.is_active == True,
-        User.is_online == True
+        User.is_active.is_(True),
+        User.is_online.is_(True)
     ).order_by(User.id).all()
+
+    logger.info(
+        "Eligible advisers: %s",
+        [(u.id, u.name, u.is_online) for u in active_advisers]
+    )
     
     if not active_advisers:
         return None
@@ -49,4 +62,16 @@ def next_adviser_id(db: Session) -> Optional[int]:
     cursor.last_assigned_user = next_adviser_id
     db.commit()
     
-    return next_adviser_id 
+    return next_adviser_id
+
+
+
+# TEST EXECUTION
+if __name__ == "__main__":
+    db = SessionLocal()
+
+    adviser_id = next_adviser_id(db)
+
+    print("Assigned Adviser ID:", adviser_id)
+
+    db.close()
