@@ -346,10 +346,13 @@ async def export_ticket_events_csv(
         'Customer Email',
         'Subject',
         'Assigned To',
-        'Old Status',
-        'New Status',
+        'Ticket Status',
+        'Ticket Created At',
+        'Ticket Updated At',
+        'Event Old Status',
+        'Event New Status',
         'Event Type',
-        'Created At'
+        'Reopened At'
     ])
 
     # Data
@@ -362,6 +365,9 @@ async def export_ticket_events_csv(
             ticket.customer_email if ticket else '',
             ticket.subject if ticket else '',
             ticket.assigned_user.name if ticket and ticket.assigned_user else '',
+            ticket.status.value if ticket and ticket.status else '',
+            ticket.created_at.strftime('%Y-%m-%d %H:%M:%S') if ticket and ticket.created_at else '',
+            ticket.updated_at.strftime('%Y-%m-%d %H:%M:%S') if ticket and ticket.updated_at else '',
             event.old_value,
             event.new_value,
             event.event_type,

@@ -12,6 +12,9 @@ const AdminBulkReassign: React.FC = () => {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
+
   const [pageSize, setPageSize] = useState(10)
 
   useEffect(() => {
@@ -25,7 +28,7 @@ const AdminBulkReassign: React.FC = () => {
       setTickets([])
       setSelectedTickets(new Set())
     }
-  }, [sourceAgentId, pageSize])
+  }, [sourceAgentId, pageSize, fromDate, toDate])
 
   const fetchAdvisers = async () => {
     try {
@@ -45,7 +48,9 @@ const AdminBulkReassign: React.FC = () => {
       const response = await ticketsAPI.list({
         assigned_to: sourceAgentId,
         status: 'Open',
-        page_size: pageSize
+        page_size: pageSize,
+        from_date: fromDate || undefined,
+        to_date: toDate || undefined
       })
       setTickets(response.tickets)
     } catch (err: any) {
@@ -234,6 +239,47 @@ const AdminBulkReassign: React.FC = () => {
             <h2 className="text-lg font-semibold text-gray-900">
               Step 2: Select Tickets to Transfer
             </h2>
+
+            <div className="flex flex-wrap items-center gap-4 mb-4">
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">From Date</label>
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => {
+                    setFromDate(e.target.value)
+                    setSelectedTickets(new Set())
+                  }}
+                  className="border rounded px-2 py-1 text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">To Date</label>
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => {
+                    setToDate(e.target.value)
+                    setSelectedTickets(new Set())
+                  }}
+                  className="border rounded px-2 py-1 text-sm"
+                />
+              </div>
+
+              {(fromDate || toDate) && (
+                <button
+                  onClick={() => {
+                    setFromDate('')
+                    setToDate('')
+                    setSelectedTickets(new Set())
+                  }}
+                  className="text-sm text-gray-600 hover:text-gray-800 mt-5"
+                >
+                  Clear Dates
+                </button>
+              )}
+            </div>
 
             <div className="flex items-center gap-2 text-sm">
                 <span className="text-gray-600">Show</span>
